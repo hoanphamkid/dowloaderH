@@ -28,14 +28,23 @@ export function createApp(versions = {}) {
       crossOriginEmbedderPolicy: false,
     }),
   );
-  app.use(cors({ origin: config.origins }));
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin || config.origins.includes(origin) || origin === 'https://dowloaderh.onrender.com')
+          return callback(null, true);
+        return callback(new Error('Origin is not allowed.'));
+      },
+    }),
+  );
   app.use((req, res, next) => {
     // CORS alone does not stop browser form submissions to a local server.
     if (
       req.method === 'POST' &&
       req.headers.origin &&
       !config.origins.includes(req.headers.origin) &&
-      req.headers.origin !== `http://${config.host}:${config.port}`
+      req.headers.origin !== `http://${config.host}:${config.port}` &&
+      req.headers.origin !== 'https://dowloaderh.onrender.com'
     )
       return res.status(403).json({ error: 'Origin is not allowed.' });
     if (req.method === 'POST' && !req.is('application/json'))
