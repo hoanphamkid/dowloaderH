@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY client/package*.json client/
 COPY server/package*.json server/
-RUN npm install --omit=dev
+RUN npm install
 COPY . .
 ENV NODE_ENV=production HOST=0.0.0.0
 RUN npm run build -w client
