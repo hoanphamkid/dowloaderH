@@ -30,6 +30,8 @@ export function baseArgs() {
     proxyUrl,
     '--js-runtimes',
     'node',
+    '--extractor-args',
+    'youtubepot-bgutilscript:server_home=/opt/bgutil-ytdlp-pot-provider/server',
     '--ffmpeg-location',
     config.ffmpeg,
   ];
