@@ -782,6 +782,27 @@ footer button {
 .donate-modal strong { font-size: 14px; letter-spacing: 0.04em; }
 .donate-modal > span { color: #c9b8db; font-size: 13px; }
 .donate-close { position: absolute; top: 12px; right: 12px; color: #c9b8db; }
+.donate-section {
+  margin: 36px 5.4% 24px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  border: 1px solid #3d3152;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #1c1528, #120f19);
+}
+.donate-section-copy { max-width: 430px; display: flex; flex-direction: column; gap: 8px; }
+.donate-section-copy h2 { margin: 0; color: #f4eefc; font-size: 24px; }
+.donate-section-copy p:not(.eyebrow) { margin: 0 0 6px; color: #b9aec8; font-size: 13px; line-height: 1.55; }
+.donate-section-copy strong { color: #f4eefc; font-size: 14px; }
+.donate-section-copy span { color: #c9b8db; font-size: 13px; }
+.donate-section-qr { width: 180px; height: 180px; object-fit: cover; border-radius: 10px; background: #fff; }
+@media (max-width: 640px) {
+  .donate-section { flex-direction: column; align-items: flex-start; }
+  .donate-section-qr { align-self: center; width: min(240px, 100%); height: auto; }
+}
 .footer-caption {
   padding-left: 6px;
   font-size: 8px;

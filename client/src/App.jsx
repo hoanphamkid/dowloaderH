@@ -555,6 +555,16 @@ export default function App() {
           </section>
         </div>
       )}
+      <section className="donate-section" aria-labelledby="donate-section-title">
+        <div className="donate-section-copy">
+          <p className="eyebrow">ỦNG HỘ DỰ ÁN</p>
+          <h2 id="donate-section-title">Giúp tôi duy trì website</h2>
+          <p>Nếu website hữu ích với bạn, một lời ủng hộ sẽ giúp tôi duy trì và phát triển dự án.</p>
+          <strong>PHẠM THANH HOÀN</strong>
+          <span>0945459491</span>
+        </div>
+        <img className="donate-section-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" />
+      </section>
       <footer>
         <div>
           <span className="footer-symbol">
