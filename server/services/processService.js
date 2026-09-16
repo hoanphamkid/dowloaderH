@@ -61,6 +61,7 @@ export function runProcess(
     child.stderr.on('data', (chunk) => {
       const text = chunk.toString();
       stderr = (stderr + text).slice(-16000);
+      if (String(command).toLowerCase().includes('yt-dlp')) console.error('[YT-DLP]', text.trim());
       text.split(/\r?\n/).forEach((line) => onLine?.(line));
     });
     child.once('error', (error) => {

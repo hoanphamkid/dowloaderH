@@ -28,9 +28,8 @@ export function baseArgs() {
     '2',
     '--proxy',
     proxyUrl,
-    '--no-js-runtimes',
     '--js-runtimes',
-    `node:${process.execPath}`,
+    'node',
     '--ffmpeg-location',
     config.ffmpeg,
   ];
