@@ -26,7 +26,7 @@ export const config = {
   downloadLimit: number('DOWNLOAD_RATE_LIMIT', 10),
   rateWindow: number('RATE_WINDOW_MINUTES', 10) * 60000,
   yt: process.env.YT_DLP_PATH || 'yt-dlp',
-  ffmpeg: process.env.FFMPEG_PATH || 'ffmpeg',
+  ffmpeg: process.env.FFMPEG_PATH || (process.platform === 'win32' ? 'ffmpeg' : '/usr/bin/ffmpeg'),
   temp: path.join(root, 'server', 'temp'),
 };
 // Relative executable paths are always rooted at the project, not the current job directory.
