@@ -83,7 +83,8 @@ try {
 
   Write-Host 'Giữ cửa sổ này mở. Dùng URL https://...trycloudflare.com bên dưới cho VITE_API_URL trên Vercel, rồi Redeploy.'
   Write-Host 'URL có thể thay đổi khi chạy lại tunnel. Nhấn Ctrl+C để dừng phiên này.'
-  & $cloudflaredPath tunnel --url $backendUrl
+  # HTTP/2 works on networks that block outbound QUIC/UDP port 7844.
+  & $cloudflaredPath tunnel --protocol http2 --url $backendUrl
   if ($LASTEXITCODE -ne 0) {
     throw "Cloudflare Tunnel đã dừng với mã lỗi $LASTEXITCODE. Xem thông báo phía trên."
   }
