@@ -8,6 +8,9 @@ import routes from './routes/videoRoutes.js';
 import { AppError } from './utils/errors.js';
 export function createApp(versions = {}) {
   const app = express();
+  // Render runs the service behind a reverse proxy. Trust the first proxy so
+  // express-rate-limit can safely read X-Forwarded-For without rejecting requests.
+  app.set('trust proxy', 1);
   const visitors = new Map();
   const visitorTtl = 45_000;
   const pruneVisitors = () => {
