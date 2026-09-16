@@ -33,8 +33,7 @@ export default function App() {
     [error, setError] = useState(''),
     [maxBatch, setMaxBatch] = useState(10),
     [online, setOnline] = useState(null),
-    [menu, setMenu] = useState(false),
-    [donateOpen, setDonateOpen] = useState(false);
+    [menu, setMenu] = useState(false);
   const { history, add, clear } = useHistory();
   const stops = useRef(new Map()),
     itemsRef = useRef(items),
@@ -541,20 +540,6 @@ export default function App() {
           </>
         )}
       </main>
-      {donateOpen && (
-        <div className="donate-modal-backdrop" role="presentation" onClick={() => setDonateOpen(false)}>
-          <section className="donate-modal" role="dialog" aria-modal="true" aria-labelledby="donate-title" onClick={(event) => event.stopPropagation()}>
-            <button className="donate-close" type="button" aria-label="Close" onClick={() => setDonateOpen(false)}>
-              <X size={18} />
-            </button>
-            <h2 id="donate-title">Ủng hộ dự án</h2>
-            <p>Nếu website hữu ích với bạn, một lời ủng hộ sẽ giúp tôi duy trì và phát triển dự án.</p>
-            <img className="donate-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" />
-            <strong>PHẠM THANH HOÀN</strong>
-            <span>0945459491</span>
-          </section>
-        </div>
-      )}
       <section className="donate-section" aria-labelledby="donate-section-title">
         <div className="donate-section-copy">
           <p className="eyebrow">ỦNG HỘ DỰ ÁN</p>
@@ -575,7 +560,6 @@ export default function App() {
         </div>
         <div>
           <button onClick={() => section('how-it-works')}>Cách hoạt động</button>
-          <button type="button" onClick={() => setDonateOpen(true)}>Ủng hộ tôi</button>
           <span>Tôn trọng người sáng tạo. Tải xuống có trách nhiệm.</span>
         </div>
       </footer>
