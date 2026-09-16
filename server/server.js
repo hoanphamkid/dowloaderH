@@ -13,7 +13,8 @@ try {
   const proxy = await startProxy();
   setProxy(proxy.url);
   const app = createApp(versions);
-  const server = app.listen(config.port, config.host, () =>
+  const server = app.listen(config.port, config.host);
+  server.once('listening', () =>
     console.log(`Social Video Downloader: http://${config.host}:${config.port}`),
   );
   server.requestTimeout = 0;

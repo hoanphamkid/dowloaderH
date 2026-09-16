@@ -27,6 +27,11 @@ export const config = {
   rateWindow: number('RATE_WINDOW_MINUTES', 10) * 60000,
   yt: process.env.YT_DLP_PATH || 'yt-dlp',
   ffmpeg: process.env.FFMPEG_PATH || (process.platform === 'win32' ? 'ffmpeg' : '/usr/bin/ffmpeg'),
+  // The Oracle/Linux deployment has the optional bgutil script provider installed.
+  // Windows development can omit it and use yt-dlp's built-in extractors.
+  bgutilServerHome:
+    process.env.BGUTIL_SERVER_HOME ||
+    (process.platform === 'linux' ? '/opt/bgutil-ytdlp-pot-provider/server' : ''),
   temp: path.join(root, 'server', 'temp'),
 };
 // Relative executable paths are always rooted at the project, not the current job directory.

@@ -10,7 +10,7 @@ export function setProxy(url) {
 }
 export function baseArgs() {
   if (!proxyUrl) throw new AppError('Media service is not ready.', 503);
-  return [
+  const args = [
     '--ignore-config',
     '--no-plugin-dirs',
     '--no-playlist',
@@ -30,11 +30,17 @@ export function baseArgs() {
     proxyUrl,
     '--js-runtimes',
     'node',
-    '--extractor-args',
-    'youtubepot-bgutilscript:server_home=/opt/bgutil-ytdlp-pot-provider/server',
     '--ffmpeg-location',
     config.ffmpeg,
   ];
+  if (config.bgutilServerHome)
+    args.splice(
+      args.indexOf('--ffmpeg-location'),
+      0,
+      '--extractor-args',
+      `youtubepot-bgutilscript:server_home=${config.bgutilServerHome}`,
+    );
+  return args;
 }
 const supported = new Set(['http', 'https', 'm3u8_native', 'http_dash_segments']);
 export function normalizeInfo(raw, url) {

@@ -98,6 +98,8 @@ export function createApp(versions = {}) {
           ? 413
           : error instanceof SyntaxError
             ? 400
+            : error?.message === 'Origin is not allowed.'
+              ? 403
             : 500;
     if (status === 500) console.error(error);
     res.status(status).json({
@@ -106,6 +108,8 @@ export function createApp(versions = {}) {
           ? 'An unexpected server error occurred.'
           : error instanceof AppError
             ? error.message
+            : error?.message === 'Origin is not allowed.'
+              ? error.message
             : 'Invalid request body.',
     });
   });
