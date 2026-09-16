@@ -751,6 +751,37 @@ footer button {
   color: #aaa1b7;
   font-size: 9px;
 }
+.donate-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(8, 6, 14, 0.78);
+  backdrop-filter: blur(8px);
+}
+.donate-modal {
+  position: relative;
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 24px 24px;
+  border: 1px solid #735b9c;
+  border-radius: 18px;
+  background: #17121f;
+  color: #f4eefc;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+.donate-modal h2 { margin: 0; font-size: 22px; }
+.donate-modal p { margin: 0 0 6px; color: #b9aec8; font-size: 13px; line-height: 1.5; }
+.donate-qr { width: min(320px, 100%); border-radius: 10px; background: #fff; }
+.donate-modal strong { font-size: 14px; letter-spacing: 0.04em; }
+.donate-modal > span { color: #c9b8db; font-size: 13px; }
+.donate-close { position: absolute; top: 12px; right: 12px; color: #c9b8db; }
 .footer-caption {
   padding-left: 6px;
   font-size: 8px;
