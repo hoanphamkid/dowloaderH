@@ -31,7 +31,12 @@ export function createApp(versions = {}) {
   app.use(
     cors({
       origin: (origin, callback) => {
-        if (!origin || config.origins.includes(origin) || origin === 'https://dowloaderh.onrender.com')
+        if (
+          !origin ||
+          config.origins.includes(origin) ||
+          origin === 'https://dowloaderh.onrender.com' ||
+          origin === 'https://hoanpham-downloader.vercel.app'
+        )
           return callback(null, true);
         return callback(new Error('Origin is not allowed.'));
       },
@@ -44,7 +49,8 @@ export function createApp(versions = {}) {
       req.headers.origin &&
       !config.origins.includes(req.headers.origin) &&
       req.headers.origin !== `http://${config.host}:${config.port}` &&
-      req.headers.origin !== 'https://dowloaderh.onrender.com'
+      req.headers.origin !== 'https://dowloaderh.onrender.com' &&
+      req.headers.origin !== 'https://hoanpham-downloader.vercel.app'
     )
       return res.status(403).json({ error: 'Origin is not allowed.' });
     if (req.method === 'POST' && !req.is('application/json'))
