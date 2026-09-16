@@ -1,0 +1,149 @@
+import { useState } from 'react';
+import { Download, Clock, CheckCircle2, LoaderCircle, Music2, Video, ImageOff } from 'lucide-react';
+import PlatformIcon from './PlatformIcon.jsx';
+import { duration, fileSize } from '../utils/format.js';
+import { platformLabel } from '../utils/platform.js';
+import { API_URL } from '../services/api.js';
+const labels = {
+  queued: 'Đang xếp hàng',
+  fetching: 'Fetching information…',
+  preparing: 'Preparing…',
+  downloading: 'Đang tải…',
+  merging: 'Merging audio…',
+  processing: 'Processing…',
+  completed: 'Ready to save',
+  saving: 'Sending to your browser…',
+  delivered: 'Completed',
+  failed: 'Tải thất bại',
+  'connection-error': 'Reconnecting…',
+};
+export default function VideoCard({ item, onSelect, onDownload, onSave }) {
+  const [tab, setTab] = useState(item.video?.formats[0]?.type || 'video');
+  const [imageFailed, setImageFailed] = useState(false);
+  const { video, job } = item;
+  if (!video)
+    return (
+      <article className="error-card">
+        <strong>Không thể phân tích liên kết này</strong>
+        <span>{item.url}</span>
+        <p>{item.error}</p>
+      </article>
+    );
+  const available = video.formats.filter((f) => f.type === tab);
+  const shown = available.length ? available : video.formats.filter((f) => f.type === 'audio');
+  const selected = video.formats.find((f) => f.id === item.selected);
+  const changeTab = (next) => {
+    setTab(next);
+    const first = video.formats.find((f) => f.type === next);
+    if (first && selected?.type !== next) onSelect(item.id, first.id);
+  };
+  const busy = job && !['failed', 'delivered', 'completed', 'expired'].includes(job.state);
+  return (
+    <article className="video-card">
+      <div className="preview-image">
+        {video.thumbnail && !imageFailed ? (
+          <img
+            src={video.thumbnail}
+            alt={`Thumbnail for ${video.title}`}
+            referrerPolicy="no-referrer"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <ImageOff size={36} />
+        )}
+        <span className="duration">{duration(video.duration)}</span>
+      </div>
+      <div className="video-details">
+        <div className="eyebrow">
+          <PlatformIcon platform={video.platform} size={15} />
+          <strong>{platformLabel(video.platform)}</strong>
+          <span>•</span>
+          {video.author}
+        </div>
+        <h3>{video.title}</h3>
+        <div className="format-tabs">
+          <button
+            className={tab === 'video' ? 'active' : ''}
+            onClick={() => changeTab('video')}
+            disabled={busy || !video.formats.some((f) => f.type === 'video')}
+          >
+            <Video size={15} />
+            Video
+          </button>
+          <button
+            className={tab === 'audio' ? 'active' : ''}
+            onClick={() => changeTab('audio')}
+            disabled={busy || !video.formats.some((f) => f.type === 'audio')}
+          >
+            <Music2 size={15} />
+            Âm thanh
+          </button>
+        </div>
+        <div className="download-options">
+          <label className="sr-only" htmlFor={`format-${item.id}`}>
+            Định dạng tải xuống
+          </label>
+          <select
+            id={`format-${item.id}`}
+            value={shown.some((f) => f.id === item.selected) ? item.selected : ''}
+            onChange={(e) => onSelect(item.id, e.target.value)}
+            disabled={busy}
+          >
+            <option value="" disabled>
+              Chọn chất lượng
+            </option>
+            {shown.map((f) => (
+              <option value={f.id} key={f.id}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+          {['completed', 'saving'].includes(job?.state) ? (
+            <a
+              className="primary compact save-file-link"
+              href={`${API_URL}/api/download/${encodeURIComponent(job.id)}/file`}
+              download={job.filename || true}
+              aria-disabled={job.state === 'saving'}
+              onClick={(event) => {
+                if(job.state === 'saving') { event.preventDefault(); return; }
+                onSave(item.id);
+              }}
+            >
+              {job.state === 'saving' ? <LoaderCircle size={17} className="spin"/> : <Download size={17}/>}
+              {job.state === 'saving' ? 'Đang lưu…' : 'Lưu tệp'}
+            </a>
+          ) : (
+            <button
+              className="primary compact"
+              disabled={busy || !selected}
+              onClick={() => onDownload(item.id)}
+            >
+              {busy ? <LoaderCircle size={17} className="spin" /> : <Download size={17} />}{' '}
+              {job?.state === 'saving' ? 'Đang lưu…' : 'Tải xuống'}
+            </button>
+          )}
+        </div>
+        <div className="format-note">
+          {selected ? fileSize(selected.size) : 'Chọn một định dạng có sẵn'}
+          {selected?.bitrate
+            ? ' · Converted from source audio; bitrate does not improve source quality.'
+            : ''}
+        </div>
+        {job && (
+          <div className={`job-status ${job.state === 'failed' ? 'failed' : ''}`} role="status">
+            <div>
+              <span>
+                {job.state === 'delivered' ? <CheckCircle2 size={15} /> : <Clock size={14} />}{' '}
+                {labels[job.state] || job.state}
+                {job.queuePosition > 0 ? ` · Position ${job.queuePosition}` : ''}
+              </span>
+              <span>{Math.round(job.progress || 0)}%</span>
+            </div>
+            <progress max="100" value={job.progress || 0} />
+            {job.error && <p>{job.error}</p>}
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}

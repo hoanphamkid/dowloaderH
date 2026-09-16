@@ -1,0 +1,9 @@
+node_modules/
+client/dist/
+.env
+server/temp/*
+!server/temp/.gitkeep
+.tools/
+*.log
+test-results/
+downloads/

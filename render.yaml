@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dowloaderh-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: CLIENT_URL
+        sync: false

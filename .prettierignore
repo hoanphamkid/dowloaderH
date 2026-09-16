@@ -1,0 +1,5 @@
+node_modules
+client/dist
+.tools
+package-lock.json
+server/temp
