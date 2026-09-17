@@ -495,7 +495,7 @@ export default function App() {
         </div>
         <img className="donate-section-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" />
       </section>
-      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => <span key={item.id}>💜 {item.name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ</span>)}</div></section>}
+      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => <span key={item.id}>💜 {item.name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ{item.message && ` · “${item.message}”`}</span>)}</div></section>}
       <footer>
         <div>
           <span className="footer-symbol">

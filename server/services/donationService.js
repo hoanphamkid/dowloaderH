@@ -11,7 +11,7 @@ export async function recordDonation(payload = {}) {
   const donations = await listDonations();
   const id = String(payload.id ?? payload.referenceCode ?? payload.reference_code ?? `${amount}-${payload.transactionDate ?? Date.now()}`);
   if (donations.some((item) => item.id === id)) return true;
-  donations.unshift({ id, name: String(payload.senderName ?? payload.sender_name ?? 'Một người bạn').slice(0, 80), amount, createdAt: new Date().toISOString() });
+  donations.unshift({ id, name: String(payload.senderName ?? payload.sender_name ?? 'Một người bạn').slice(0, 80), amount, message: String(payload.content ?? payload.description ?? payload.transferContent ?? payload.transfer_content ?? '').slice(0, 180), createdAt: new Date().toISOString() });
   await fs.writeFile(file, JSON.stringify(donations.slice(0, 100), null, 2));
   return true;
 }
