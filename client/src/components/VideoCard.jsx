@@ -23,7 +23,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
   const [tab, setTab] = useState(item.video?.formats[0]?.type || 'video');
   const [imageFailed, setImageFailed] = useState(false);
   const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches,
+    typeof window !== 'undefined' && window.matchMedia?.('(max-width: 760px)').matches,
   );
   const [smoothProgress, setSmoothProgress] = useState(1);
   const { video, job } = item;
@@ -36,6 +36,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
     return () => window.clearInterval(timer);
   }, [job?.state, job?.progress]);
   useEffect(() => {
+    if (!window.matchMedia) return undefined;
     const query = window.matchMedia('(max-width: 760px)');
     const update = () => setIsMobile(query.matches);
     query.addEventListener?.('change', update);
