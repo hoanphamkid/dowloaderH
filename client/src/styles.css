@@ -748,6 +748,7 @@ footer button {
 .donate-card h3 { margin: 0 0 4px; color: #f4eefc; }
 .donate-card:first-child h3 { font-size: 0; }
 .donate-card:first-child h3::after { content: '☕ Giúp tôi duy trì website'; font-size: 18px; }
+.donate-support-copy { max-width: 280px; margin: -2px 0 4px; color: #c9b8db; font-size: 13px; line-height: 1.45; text-align: center; }
 .donate-card > span { color: #c9b8db; font-size: 13px; }
 .donate-card .donate-section-qr { width: 210px; height: 210px; margin: 4px 0 8px; }
 .donation-history { align-items: stretch; }
