@@ -569,7 +569,6 @@ button:not(:disabled):active {
 }
 .how-section,
 .privacy-strip,
-.faq-section,
 .results,
 .history-page {
   max-width: 1040px;
@@ -587,8 +586,7 @@ button:not(:disabled):active {
   font-weight: 600;
   color: #a58cc6;
 }
-.section-top h2,
-.faq-section h2 {
+.section-top h2 {
   font-family: Manrope, sans-serif;
   font-size: 25px;
   letter-spacing: -0.8px;
@@ -690,39 +688,6 @@ button:not(:disabled):active {
   gap: 6px;
   letter-spacing: 1px;
   white-space: nowrap;
-}
-.faq-section {
-  margin-top: 65px;
-  max-width: 760px;
-  margin-bottom: 65px;
-}
-.faq-section > h2 {
-  margin-bottom: 25px;
-}
-.faq-section details {
-  border-bottom: 1px solid #28232d;
-  padding: 18px 0;
-}
-.faq-section summary {
-  list-style: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #c4bdce;
-  gap: 12px;
-}
-.faq-section summary::-webkit-details-marker {
-  display: none;
-}
-.faq-section details p {
-  font-size: 12px;
-  color: #93899f;
-  line-height: 1.9;
-  padding-right: 35px;
-}
-.faq-section details[open] summary svg {
-  transform: rotate(180deg);
 }
 footer {
   margin: 0 5.4%;
@@ -1186,8 +1151,7 @@ footer button {
   .how-section {
     margin-top: 50px;
   }
-  .section-top h2,
-  .faq-section h2 {
+  .section-top h2 {
     font-size: 22px;
   }
   .three-steps {
@@ -1204,9 +1168,6 @@ footer button {
   }
   .privacy-strip > span {
     display: none;
-  }
-  .faq-section {
-    margin: 50px 6%;
   }
   .video-card {
     grid-template-columns: 190px 1fr;
@@ -1375,8 +1336,7 @@ footer button {
     font-size: 7px;
     letter-spacing: 1.2px;
   }
-  .section-top h2,
-  .faq-section h2 {
+  .section-top h2 {
     font-size: 21px;
     line-height: 1.5;
     letter-spacing: -0.5px;
@@ -1414,12 +1374,6 @@ footer button {
   }
   .privacy-strip p {
     font-size: 9px;
-  }
-  .faq-section summary {
-    font-size: 11px;
-  }
-  .faq-section details p {
-    font-size: 11px;
   }
   footer > div:last-child {
     flex-wrap: wrap;

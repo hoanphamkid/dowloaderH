@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   Check,
-  ChevronDown,
   Clipboard,
   Download,
   History as HistoryIcon,
@@ -506,36 +505,6 @@ export default function App() {
                 <LockKeyhole size={14} />
                 RIÊNG TƯ NGAY TỪ THIẾT KẾ
               </span>
-            </section>
-            <section className="faq-section">
-              <span className="section-kicker">MỘT VÀI ĐIỀU BẠN NÊN BIẾT</span>
-              <h2>Câu hỏi thường gặp</h2>
-              {[
-                [
-                  'Những nền tảng nào được hỗ trợ?',
-                  'Video và âm thanh công khai từ YouTube, TikTok, Instagram, Facebook, X, Reddit, Vimeo, SoundCloud và các trang được yt-dlp hỗ trợ. Khả năng tải còn tùy nền tảng và từng video.',
-                ],
-                [
-                  'Tôi có thể chỉ tải âm thanh không?',
-                  'Có. Phân tích liên kết, chọn Âm thanh, rồi chọn MP3 ở 128, 192, 256 hoặc 320 kbps. M4A gốc sẽ hiện khi có sẵn. Việc chuyển đổi không làm tăng chất lượng âm thanh ban đầu.',
-                ],
-                [
-                  'Video tải xuống được lưu ở đâu?',
-                  'Trình duyệt lưu tệp vào thiết bị của bạn. Bản sao trên máy chủ sẽ bị xóa sau khi gửi, còn tệp bỏ dở mặc định hết hạn sau 30 phút. Lịch sử tải chỉ được lưu trong trình duyệt này.',
-                ],
-                [
-                  'Tôi có thể tải nội dung nào?',
-                  'Chỉ tải nội dung công khai mà bạn sở hữu hoặc được phép tải. Nội dung riêng tư, yêu cầu tài khoản, giới hạn độ tuổi, trả phí hoặc được bảo vệ DRM không được hỗ trợ.',
-                ],
-              ].map(([question, answer]) => (
-                <details key={question}>
-                  <summary>
-                    {question}
-                    <ChevronDown size={17} />
-                  </summary>
-                  <p>{answer}</p>
-                </details>
-              ))}
             </section>
           </>
         )}
