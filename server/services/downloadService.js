@@ -5,6 +5,7 @@ import { config } from '../config.js';
 import { AppError } from '../utils/errors.js';
 import { sanitizeFilename } from '../utils/filename.js';
 import { getInfo, baseArgs } from './videoService.js';
+import { detectPlatform } from '../utils/url.js';
 import { runProcess } from './processService.js';
 import { TaskQueue } from './queueService.js';
 import { jobDirectory, removeJobFiles } from './cleanupService.js';
@@ -110,7 +111,9 @@ export function createDownload(request) {
           '--max-filesize',
           String(config.maxBytes),
           '--match-filters',
-          `!is_live & duration <= ${config.maxDuration} & !has_drm`,
+          detectPlatform(request.url) === 'instagram'
+            ? '!is_live & !has_drm'
+            : `!is_live & duration <= ${config.maxDuration} & !has_drm`,
           '--downloader',
           'native',
           '--hls-prefer-native',
