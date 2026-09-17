@@ -6,8 +6,7 @@ export const platforms = [
   ['facebook', 'Facebook', '#619aff'],
   ['twitter', 'Twitter / X', '#e7e7ed'],
   ['reddit', 'Reddit', '#ff7948'],
-  ['vimeo', 'Vimeo', '#55c5e8'],
-  ['soundcloud', 'SoundCloud', '#ffa45a'],
+  ['threads', 'Threads', '#f4f3fa'],
 ];
 export default function PlatformIcon({ platform, size = 20 }) {
   const Icon = {
@@ -46,6 +45,12 @@ export default function PlatformIcon({ platform, size = 20 }) {
         <circle cx="8" cy="13" r="1" fill="currentColor" />
         <circle cx="16" cy="13" r="1" fill="currentColor" />
       </svg>
+    );
+  if (platform === 'threads')
+    return (
+      <span className="brand-letter threads" style={{ fontSize: size + 1 }} aria-hidden="true">
+        @
+      </span>
     );
   return <Globe size={size} />;
 }
