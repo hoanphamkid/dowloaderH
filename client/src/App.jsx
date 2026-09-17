@@ -32,6 +32,11 @@ export default function App() {
       .replace(/\s*[/|_-]?\s*\d{6,}\s*$/g, '')
       .replace(/\s{2,}/g, ' ')
       .trim();
+  const donorName = (item) => {
+    if (item.name && item.name !== 'Một người bạn') return item.name;
+    const match = String(item.message || '').match(/^(.{2,60}?)\s+(?:chuyen tien|thanh toan|ung ho|donate)\b/i);
+    return match?.[1]?.trim() || item.name || 'Một người bạn';
+  };
   const [page, setPage] = useState('home'),
     [mode, setMode] = useState('single'),
     [url, setUrl] = useState(''),
@@ -502,7 +507,7 @@ export default function App() {
         </div>
         <img className="donate-section-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" />
       </section>
-      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => { const message = cleanDonationMessage(item.message); return <span key={item.id}>💜 {item.name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ{message && ` · “${message}”`}</span>; })}</div></section>}
+      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => { const message = cleanDonationMessage(item.message); const name = donorName(item); return <span key={item.id}>💜 {name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ{message && ` · “${message}”`}</span>; })}</div></section>}
       <footer>
         <div>
           <span className="footer-symbol">
