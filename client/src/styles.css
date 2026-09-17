@@ -754,6 +754,7 @@ footer button {
 .donation-history article small { color: #ff9a5c; }
 .donation-history article em { color: #00a86b; font-style: normal; }
 .donation-history article i { grid-column: 1 / -1; color: #ff7417; font-size: 13px; }
+.donation-thanks { min-height: 0; margin: 8px 0 0; border: 0; justify-content: center; color: #f4eefc; font-size: 13px; font-weight: 600; }
 @media (max-width: 640px) {
   .donate-section { flex-direction: column; align-items: flex-start; }
   .donate-section-qr { align-self: center; width: min(240px, 100%); height: auto; }
