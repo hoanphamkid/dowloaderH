@@ -26,6 +26,7 @@ beforeEach(() => {
   localStorage.clear();
   vi.clearAllMocks();
   window.scrollTo = vi.fn();
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ json: async () => ({ online: 1 }) }));
   api.mockImplementation(async (path) => {
     if (path === '/health') return { limits: { maxBatch: 10 } };
     if (path === '/video/info') return video;
@@ -56,7 +57,7 @@ afterEach(() => {
 });
 async function analyze(user) {
   await user.type(screen.getByRole('textbox', { name: 'Liên kết video' }), video.url);
-  await user.click(screen.getByRole('button', { name: /Tải xuống/ }));
+  await user.click(screen.getByRole('button', { name: 'Lấy video' }));
   await screen.findByRole('heading', { name: video.title });
 }
 describe('downloader user flows', () => {
@@ -64,8 +65,9 @@ describe('downloader user flows', () => {
     const user = userEvent.setup();
     render(<App />);
     await user.type(screen.getByRole('textbox', { name: 'Liên kết video' }), 'file:///secret');
-    await user.click(screen.getByRole('button', { name: /Tải xuống/ }));
-    expect(screen.getByRole('alert').textContent).toContain('complete URL');
+    await user.click(screen.getByRole('button', { name: 'Lấy video' }));
+    expect(screen.getByRole('alert').textContent).toContain('Liên kết chưa hợp lệ');
+    expect(screen.getByRole('textbox').getAttribute('aria-invalid')).toBe('true');
     expect(api.mock.calls.some(([path]) => path === '/video/info')).toBe(false);
   });
   it('analyzes the link and selects the correct audio endpoint and format', async () => {
@@ -86,10 +88,12 @@ describe('downloader user flows', () => {
     await act(async () => progressCallback({ id: 'job-123', state: 'downloading', progress: 42 }));
     expect(screen.getByRole('progressbar').value).toBe(42);
     expect(screen.getByRole('combobox').disabled).toBe(true);
+    expect(screen.getAllByRole('button', { name: 'Đang tải…' }).every((button) => button.disabled)).toBe(true);
+    expect(screen.getByText('Đang tải video. Tiến độ hiển thị bên dưới.')).toBeTruthy();
   });
   it('offers a native download link and records history only after confirmed delivery', async () => {
     const user = userEvent.setup();
-    const binaryFetch = vi.fn();
+    const binaryFetch = vi.fn().mockResolvedValue({ json: async () => ({ online: 1 }) });
     const createBlob = vi.fn();
     vi.stubGlobal('fetch', binaryFetch);
     vi.stubGlobal('Blob', createBlob);
@@ -107,7 +111,7 @@ describe('downloader user flows', () => {
     saveLink.addEventListener('click', (event) => event.preventDefault());
     await user.click(saveLink);
     expect(monitorDelivery).toHaveBeenCalledWith('job-123', expect.any(Function));
-    expect(binaryFetch).not.toHaveBeenCalled();
+    expect(binaryFetch.mock.calls.every(([url]) => url.endsWith('/api/visitors/heartbeat'))).toBe(true);
     expect(createBlob).not.toHaveBeenCalled();
     expect(localStorage.getItem('social-video-history-v1')).toBeNull();
     await act(async () => deliveryCallback({ id: 'job-123', state: 'delivered', progress: 100 }));
@@ -129,7 +133,7 @@ describe('downloader user flows', () => {
     await act(async () => deliveryCallback({ id: 'job-123', state: 'completed', progress: 100, error: 'The transfer was interrupted. Click Save file to try again.' }));
     const retryLink = screen.getByRole('link', { name: 'Lưu tệp' });
     expect(retryLink.getAttribute('href')).toBe('/api/download/job-123/file');
-    expect(screen.getByText(/The transfer was interrupted/)).toBeTruthy();
+    expect(screen.getByText(/Quá trình lưu bị gián đoạn/)).toBeTruthy();
     expect(localStorage.getItem('social-video-history-v1')).toBeNull();
     retryLink.addEventListener('click', (event) => event.preventDefault());
     await user.click(retryLink);
@@ -143,9 +147,9 @@ describe('downloader user flows', () => {
       screen.getByRole('textbox', { name: /Các liên kết video/ }),
       video.url + '\nhttps://example.com/missing',
     );
-    await user.click(screen.getByRole('button', { name: /Tải xuống/ }));
+    await user.click(screen.getByRole('button', { name: 'Lấy video' }));
     await screen.findByRole('heading', { name: video.title });
-    expect(screen.getByText('Video unavailable')).toBeTruthy();
+    expect(screen.getByText('Video không khả dụng.')).toBeTruthy();
     expect(api).toHaveBeenCalledWith('/batch/info', {
       urls: [video.url, 'https://example.com/missing'],
     });
@@ -158,8 +162,8 @@ describe('downloader user flows', () => {
     const user = userEvent.setup();
     render(<App />);
     await user.type(screen.getByRole('textbox', { name: 'Liên kết video' }), video.url);
-    await user.click(screen.getByRole('button', { name: /Tải xuống/ }));
-    expect((await screen.findByRole('alert')).textContent).toContain('This video is private.');
-    expect(screen.getByRole('button', { name: /Tải xuống/ }).disabled).toBe(false);
+    await user.click(screen.getByRole('button', { name: 'Lấy video' }));
+    expect((await screen.findByRole('alert')).textContent).toContain('Video này ở chế độ riêng tư.');
+    expect(screen.getByRole('button', { name: 'Lấy video' }).disabled).toBe(false);
   });
 });

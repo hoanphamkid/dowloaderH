@@ -23,6 +23,7 @@ import VideoCard from './components/VideoCard.jsx';
 import History from './pages/History.jsx';
 import InteractiveBackground from './components/InteractiveBackground.jsx';
 import { detectPlatformFromUrl, platformLabel } from './utils/platform.js';
+import { errorMessage } from './utils/errorMessage.js';
 export default function App() {
   const [page, setPage] = useState('home'),
     [mode, setMode] = useState('single'),
@@ -96,12 +97,12 @@ export default function App() {
       ),
     ];
     if (!urls.length) {
-      setError('Paste a public video URL to get started.');
+      setError('Bạn hãy dán liên kết video để bắt đầu.');
       return;
     }
     if (urls.length > (mode === 'batch' ? maxBatch : 1)) {
       setError(
-        `Please enter at most ${mode === 'batch' ? maxBatch : 1} URL${mode === 'batch' ? 's' : ''}.`,
+        `Bạn chỉ có thể nhập tối đa ${mode === 'batch' ? maxBatch : 1} liên kết.`,
       );
       return;
     }
@@ -114,7 +115,7 @@ export default function App() {
         }
       })
     ) {
-      setError('Please use a complete URL beginning with https:// or http://.');
+      setError('Liên kết chưa hợp lệ. Hãy nhập đầy đủ https:// hoặc http://.');
       return;
     }
     setLoading(true);
@@ -131,7 +132,7 @@ export default function App() {
         })),
       );
     } catch (error) {
-      setError(error.message);
+      setError(errorMessage(error.message));
     } finally {
       setLoading(false);
     }
@@ -190,7 +191,7 @@ export default function App() {
       setUrl(await navigator.clipboard.readText());
       setError('');
     } catch {
-      setError('Clipboard access is unavailable. Paste your link with Ctrl+V or long-press.');
+      setError('Không thể đọc bộ nhớ tạm. Nhấn Ctrl+V hoặc nhấn giữ ô nhập để dán liên kết.');
     }
   }
   return (
@@ -234,7 +235,7 @@ export default function App() {
         )}
         <button
           className="menu-button"
-          aria-label="Toggle menu"
+          aria-label="Đóng hoặc mở menu"
           aria-expanded={menu}
           onClick={() => setMenu(!menu)}
         >
@@ -306,6 +307,8 @@ export default function App() {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         autoComplete="off"
+                        aria-invalid={Boolean(error)}
+                        aria-describedby={error ? 'link-error' : undefined}
                         spellCheck="false"
                       />
                     ) : (
@@ -315,6 +318,8 @@ export default function App() {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         rows={4}
+                        aria-invalid={Boolean(error)}
+                        aria-describedby={error ? 'link-error' : undefined}
                       />
                     )}
                     <button
@@ -327,13 +332,13 @@ export default function App() {
                       <span>Dán</span>
                     </button>
                     <button type="submit" className="primary analyze" disabled={loading || active}>
-                      {loading ? (
+                      {loading || active ? (
                         <LoaderCircle size={18} className="spin" />
                       ) : (
                         <ArrowDownToLine size={18} />
                       )}{' '}
-                      {loading ? 'Đang phân tích…' : 'Tải xuống'}
-                      {!loading && <ArrowRight size={17} />}
+                      {loading ? 'Đang lấy video…' : active ? 'Đang tải…' : 'Lấy video'}
+                      {!loading && !active && <ArrowRight size={17} />}
                     </button>
                   </div>
                   {detectedPlatforms.length > 0 && (
@@ -360,34 +365,34 @@ export default function App() {
                   </div>
                 </form>
                 {error && (
-                  <div className="error-message" role="alert">
+                  <div className="error-message" id="link-error" role="alert">
                     {error}
                       <button onClick={() => setError('')} aria-label="Đóng thông báo lỗi">
                       <X size={16} />
                     </button>
                   </div>
                 )}
-                {loading && (
+                {(loading || active) && (
                   <div className="analyzing" role="status">
                     <LoaderCircle className="spin" size={16} />
-                    Đang lấy thông tin và các định dạng có sẵn…
+                    {loading ? 'Đang lấy thông tin và chất lượng video…' : 'Đang tải video. Tiến độ hiển thị bên dưới.'}
                   </div>
                 )}
               </div>
               <div className="trust-row">
                 <span>
                   <Check size={14} />
-                  Original quality
+                  Chất lượng gốc
                 </span>
                 <i />
                 <span>
                   <Check size={14} />
-                  No watermarks added
+                  Không thêm hình mờ
                 </span>
                 <i />
                 <span>
                   <Check size={14} />
-                  No ads. Ever.
+                  Không quảng cáo
                 </span>
               </div>
             </section>

@@ -37,7 +37,7 @@ describe('native download confirmation', () => {
     const update = vi.fn();
     monitorDelivery('job-123', update, { startTimeout: 3000 });
     await vi.advanceTimersByTimeAsync(3000);
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'completed', error: expect.stringContaining('has not started') }));
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'completed', error: expect.stringContaining('chưa bắt đầu tải') }));
     await vi.advanceTimersByTimeAsync(5000);
     expect(update).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledTimes(3);
@@ -49,7 +49,7 @@ describe('native download confirmation', () => {
     const update = vi.fn();
     monitorDelivery('job-123', update);
     await vi.advanceTimersByTimeAsync(2000);
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'completed', error: expect.stringContaining('interrupted') }));
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'completed', error: expect.stringContaining('bị gián đoạn') }));
   });
 
   it('requires preparation again when the file has expired', async () => {
@@ -57,7 +57,7 @@ describe('native download confirmation', () => {
     const update = vi.fn();
     monitorDelivery('job-123', update);
     await vi.advanceTimersByTimeAsync(1000);
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'failed', error: expect.stringContaining('expired') }));
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'failed', error: expect.stringContaining('hết hạn') }));
     expect(fetch).toHaveBeenCalledOnce();
   });
 
@@ -66,7 +66,7 @@ describe('native download confirmation', () => {
     const update = vi.fn();
     monitorDelivery('job-123', update);
     await vi.advanceTimersByTimeAsync(10000);
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'completed', error: expect.stringContaining('Cannot confirm') }));
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ state: 'completed', error: expect.stringContaining('Chưa thể xác nhận') }));
     expect(update).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledTimes(5);
   });

@@ -4,18 +4,20 @@ import PlatformIcon from './PlatformIcon.jsx';
 import { duration, fileSize } from '../utils/format.js';
 import { platformLabel } from '../utils/platform.js';
 import { API_URL } from '../services/api.js';
+import { errorMessage } from '../utils/errorMessage.js';
 const labels = {
   queued: 'Đang xếp hàng',
-  fetching: 'Fetching information…',
-  preparing: 'Preparing…',
+  fetching: 'Đang lấy thông tin…',
+  preparing: 'Đang chuẩn bị…',
   downloading: 'Đang tải…',
-  merging: 'Merging audio…',
-  processing: 'Processing…',
-  completed: 'Ready to save',
-  saving: 'Sending to your browser…',
-  delivered: 'Completed',
+  merging: 'Đang ghép âm thanh…',
+  processing: 'Đang xử lý…',
+  completed: 'Sẵn sàng lưu tệp',
+  saving: 'Đang gửi tệp đến trình duyệt…',
+  delivered: 'Đã tải xong',
+  expired: 'Tệp đã hết hạn',
   failed: 'Tải thất bại',
-  'connection-error': 'Reconnecting…',
+  'connection-error': 'Đang kết nối lại…',
 };
 export default function VideoCard({ item, onSelect, onDownload, onSave }) {
   const [tab, setTab] = useState(item.video?.formats[0]?.type || 'video');
@@ -26,7 +28,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
       <article className="error-card">
         <strong>Không thể phân tích liên kết này</strong>
         <span>{item.url}</span>
-        <p>{item.error}</p>
+        <p>{errorMessage(item.error)}</p>
       </article>
     );
   const available = video.formats.filter((f) => f.type === tab);
@@ -44,7 +46,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
         {video.thumbnail && !imageFailed ? (
           <img
             src={video.thumbnail}
-            alt={`Thumbnail for ${video.title}`}
+            alt={`Ảnh thu nhỏ của ${video.title}`}
             referrerPolicy="no-referrer"
             onError={() => setImageFailed(true)}
           />
@@ -119,14 +121,14 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
               onClick={() => onDownload(item.id)}
             >
               {busy ? <LoaderCircle size={17} className="spin" /> : <Download size={17} />}{' '}
-              {job?.state === 'saving' ? 'Đang lưu…' : 'Tải xuống'}
+              {busy ? 'Đang tải…' : 'Tải xuống'}
             </button>
           )}
         </div>
         <div className="format-note">
           {selected ? fileSize(selected.size) : 'Chọn một định dạng có sẵn'}
           {selected?.bitrate
-            ? ' · Converted from source audio; bitrate does not improve source quality.'
+            ? ' · Chuyển đổi từ âm thanh gốc; bitrate cao hơn không làm tăng chất lượng nguồn.'
             : ''}
         </div>
         {job && (
@@ -134,13 +136,13 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
             <div>
               <span>
                 {job.state === 'delivered' ? <CheckCircle2 size={15} /> : <Clock size={14} />}{' '}
-                {labels[job.state] || job.state}
-                {job.queuePosition > 0 ? ` · Position ${job.queuePosition}` : ''}
+                {labels[job.state] || 'Đang xử lý…'}
+                {job.queuePosition > 0 ? ` · Vị trí chờ: ${job.queuePosition}` : ''}
               </span>
               <span>{Math.round(job.progress || 0)}%</span>
             </div>
-            <progress max="100" value={job.progress || 0} />
-            {job.error && <p>{job.error}</p>}
+            <progress aria-label="Tiến độ tải video" max="100" value={job.progress || 0} />
+            {job.error && <p>{errorMessage(job.error)}</p>}
           </div>
         )}
       </div>

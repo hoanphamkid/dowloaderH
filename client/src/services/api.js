@@ -17,9 +17,9 @@ export async function api(path, body) {
   }
   const data = await response
     .json()
-    .catch(() => ({ error: 'The server is unavailable. Check the backend and try again.' }));
+    .catch(() => ({ error: 'Máy chủ tạm thời không khả dụng. Vui lòng thử lại sau.' }));
   if (!response.ok || data.error) {
-    const error = new Error(data.error || 'Request failed.');
+    const error = new Error(data.error || 'Yêu cầu không thành công. Vui lòng thử lại.');
     error.status = response.status;
     throw error;
   }
@@ -99,7 +99,7 @@ export function monitorDelivery(
       if (['expired', 'failed'].includes(status.state)) {
         finish(
           'failed',
-          status.error || 'This file is no longer available. Click Download to prepare it again.',
+          status.error || 'Tệp không còn khả dụng. Nhấn Tải xuống để chuẩn bị lại.',
         );
         return;
       }
@@ -108,29 +108,29 @@ export function monitorDelivery(
         finish('completed', status.error);
         return;
       } else if (seenTransfer) {
-        finish('completed', 'The transfer was interrupted. Click Save file to try again.');
+        finish('completed', 'Quá trình lưu bị gián đoạn. Nhấn Lưu tệp để thử lại.');
         return;
       } else if (Date.now() - started >= startTimeout) {
         finish(
           'completed',
-          'The browser has not started the download. Click Save file and check the browser download permissions.',
+          'Trình duyệt chưa bắt đầu tải. Nhấn Lưu tệp và kiểm tra quyền tải xuống của trình duyệt.',
         );
         return;
       }
       if (Date.now() - started >= transferTimeout) {
-        finish('completed', 'Check your browser’s Downloads panel for the file.');
+        finish('completed', 'Kiểm tra tệp trong mục Tải xuống của trình duyệt.');
         return;
       }
     } catch (error) {
       if (stopped) return;
       if (error.status === 404) {
-        finish('failed', 'This file expired or was removed. Click Download to prepare it again.');
+        finish('failed', 'Tệp đã hết hạn hoặc bị xóa. Nhấn Tải xuống để chuẩn bị lại.');
         return;
       }
       if (++errors >= 5) {
         finish(
           'completed',
-          'Cannot confirm the transfer. Check your browser’s Downloads panel before trying again.',
+          'Chưa thể xác nhận đã lưu tệp. Kiểm tra mục Tải xuống của trình duyệt trước khi thử lại.',
         );
         return;
       }

@@ -4,5 +4,5 @@ export function duration(seconds) {
     : `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 }
 export function fileSize(bytes) {
-  return bytes ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : 'Size varies';
+  return bytes ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : 'Chưa xác định dung lượng';
 }
