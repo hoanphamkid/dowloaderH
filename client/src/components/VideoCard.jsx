@@ -28,8 +28,8 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
     if (!job || !['queued', 'fetching', 'preparing'].includes(job.state)) return undefined;
     setSmoothProgress((value) => Math.max(value, job.progress || 1));
     const timer = window.setInterval(() => {
-      setSmoothProgress((value) => Math.min(95, value + (value < 30 ? 2 : 1)));
-    }, 700);
+      setSmoothProgress((value) => Math.min(99, value + 1));
+    }, 350);
     return () => window.clearInterval(timer);
   }, [job?.state, job?.progress]);
   if (!video)
