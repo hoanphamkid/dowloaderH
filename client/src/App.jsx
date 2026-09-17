@@ -25,6 +25,13 @@ import InteractiveBackground from './components/InteractiveBackground.jsx';
 import { detectPlatformFromUrl, platformLabel } from './utils/platform.js';
 import { errorMessage } from './utils/errorMessage.js';
 export default function App() {
+  const cleanDonationMessage = (message = '') =>
+    message
+      .replace(/\b(?:FT|APP|QR|REF|TXN)[A-Z0-9_-]+\b/gi, '')
+      .replace(/\b[A-Z0-9]{12,}\b/gi, '')
+      .replace(/\s*[/|_-]?\s*\d{6,}\s*$/g, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
   const [page, setPage] = useState('home'),
     [mode, setMode] = useState('single'),
     [url, setUrl] = useState(''),
@@ -495,7 +502,7 @@ export default function App() {
         </div>
         <img className="donate-section-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" />
       </section>
-      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => <span key={item.id}>💜 {item.name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ{item.message && ` · “${item.message}”`}</span>)}</div></section>}
+      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => { const message = cleanDonationMessage(item.message); return <span key={item.id}>💜 {item.name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ{message && ` · “${message}”`}</span>; })}</div></section>}
       <footer>
         <div>
           <span className="footer-symbol">
