@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Download, Clock, CheckCircle2, LoaderCircle, Music2, Video, ImageOff } from 'lucide-react';
 import PlatformIcon from './PlatformIcon.jsx';
 import { duration, fileSize } from '../utils/format.js';
@@ -22,7 +22,16 @@ const labels = {
 export default function VideoCard({ item, onSelect, onDownload, onSave }) {
   const [tab, setTab] = useState(item.video?.formats[0]?.type || 'video');
   const [imageFailed, setImageFailed] = useState(false);
+  const [smoothProgress, setSmoothProgress] = useState(1);
   const { video, job } = item;
+  useEffect(() => {
+    if (!job || !['queued', 'fetching', 'preparing'].includes(job.state)) return undefined;
+    setSmoothProgress((value) => Math.max(value, job.progress || 1));
+    const timer = window.setInterval(() => {
+      setSmoothProgress((value) => Math.min(95, value + (value < 30 ? 2 : 1)));
+    }, 700);
+    return () => window.clearInterval(timer);
+  }, [job?.state, job?.progress]);
   if (!video)
     return (
       <article className="error-card">
@@ -40,6 +49,9 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
     if (first && selected?.type !== next) onSelect(item.id, first.id);
   };
   const busy = job && !['failed', 'delivered', 'completed', 'expired'].includes(job.state);
+  const progress = ['queued', 'fetching', 'preparing'].includes(job?.state)
+    ? Math.max(1, Math.round(smoothProgress))
+    : Math.round(job?.progress || 0);
   return (
     <article className="video-card">
       <div className="preview-image">
@@ -139,9 +151,9 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
                 {labels[job.state] || 'Đang xử lý…'}
                 {job.queuePosition > 0 ? ` · Vị trí chờ: ${job.queuePosition}` : ''}
               </span>
-              <span>{Math.round(job.progress || 0)}%</span>
+              <span>{progress}%</span>
             </div>
-            <progress aria-label="Tiến độ tải video" max="100" value={job.progress || 0} />
+            <progress aria-label="Tiến độ tải video" max="100" value={progress} />
             {job.error && <p>{errorMessage(job.error)}</p>}
           </div>
         )}
