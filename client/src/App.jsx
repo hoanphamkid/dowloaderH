@@ -203,8 +203,8 @@ export default function App() {
           <section className="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="welcome-close" onClick={() => setShowNotice(false)} aria-label="Đóng thông báo"><X size={18} /></button>
             <Sparkles size={28} />
-            <h2 id="welcome-title">Chào mừng bạn đến với Hoan Pham Downloader</h2>
-            <p>Dán liên kết video công khai, chọn chất lượng và lưu lại khoảnh khắc yêu thích trong vài giây.</p>
+            <h2 id="welcome-title">Xin chào, mình là Hoàn Phạm</h2>
+            <p>Mình là sinh viên ngành Công nghệ thông tin. Mình chưa thật sự biết code, nhưng đang học hỏi mỗi ngày và tự làm công cụ nhỏ này để mọi người tải video dễ dàng hơn.</p>
             <button className="primary welcome-button" onClick={() => setShowNotice(false)}>Bắt đầu tải video <ArrowRight size={16} /></button>
           </section>
         </div>
