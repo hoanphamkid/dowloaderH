@@ -22,6 +22,9 @@ const labels = {
 export default function VideoCard({ item, onSelect, onDownload, onSave }) {
   const [tab, setTab] = useState(item.video?.formats[0]?.type || 'video');
   const [imageFailed, setImageFailed] = useState(false);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches,
+  );
   const [smoothProgress, setSmoothProgress] = useState(1);
   const { video, job } = item;
   useEffect(() => {
@@ -32,6 +35,12 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
     }, 350);
     return () => window.clearInterval(timer);
   }, [job?.state, job?.progress]);
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 760px)');
+    const update = () => setIsMobile(query.matches);
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
+  }, []);
   if (!video)
     return (
       <article className="error-card">
@@ -40,9 +49,12 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
         <p>{errorMessage(item.error)}</p>
       </article>
     );
-  const available = video.formats.filter((f) => f.type === tab);
-  const shown = available.length ? available : video.formats.filter((f) => f.type === 'audio');
-  const selected = video.formats.find((f) => f.id === item.selected);
+  const phoneSafe = (format) => !isMobile || ['mp4', 'mp3', 'm4a', 'webm'].includes(format.ext);
+  const available = video.formats.filter((f) => f.type === tab && phoneSafe(f));
+  const shown = available.length
+    ? available
+    : video.formats.filter((f) => f.type === 'audio' && phoneSafe(f));
+  const selected = video.formats.find((f) => f.id === item.selected && phoneSafe(f));
   const changeTab = (next) => {
     setTab(next);
     const first = video.formats.find((f) => f.type === next);
