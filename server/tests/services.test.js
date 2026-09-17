@@ -6,7 +6,7 @@ import path from 'node:path';
 import { TaskQueue } from '../services/queueService.js';
 import { baseArgs, normalizeInfo, publicInfo, setProxy } from '../services/videoService.js';
 import { jobDirectory, cleanupOldFiles, removeJobFiles } from '../services/cleanupService.js';
-import { config } from '../config.js';
+import { config, root } from '../config.js';
 import { runProcess } from '../services/processService.js';
 const raw = {
   title: 'Test',
@@ -68,7 +68,7 @@ test('yt-dlp loads only the project-bundled extractor plugins', () => {
   const disableDefaultsFlag = args.indexOf('--no-plugin-dirs');
   assert.notEqual(pluginFlag, -1);
   assert.ok(disableDefaultsFlag > -1 && disableDefaultsFlag < pluginFlag);
-  assert.equal(args[pluginFlag + 1], config.root);
+  assert.equal(args[pluginFlag + 1], root);
 });
 test('queue limits concurrency and recovers after task errors', async () => {
   const q = new TaskQueue(1, 2);

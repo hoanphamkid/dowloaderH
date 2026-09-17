@@ -1,4 +1,4 @@
-import { config } from '../config.js';
+import { config, root } from '../config.js';
 import { validateUrl, detectPlatform } from '../utils/url.js';
 import { AppError } from '../utils/errors.js';
 import { runProcess } from './processService.js';
@@ -16,7 +16,7 @@ export function baseArgs() {
     // repository-bundled plugin. Never fetch plugins at runtime.
     '--no-plugin-dirs',
     '--plugin-dirs',
-    config.root,
+    root,
     '--no-playlist',
     '--playlist-items',
     '1',
