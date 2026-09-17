@@ -1369,12 +1369,14 @@ footer button {
   }
 }
 .welcome-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: rgba(8,6,14,.72); backdrop-filter: blur(6px); }
-.welcome-modal { position: relative; width: min(430px,100%); display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 26px 26px; border: 1px solid #8065ad; border-radius: 18px; background: #17121f; color: #f4eefc; text-align: center; box-shadow: 0 24px 80px #0008; }
-.welcome-modal > svg { color: #bda0ff; }
-.welcome-modal h2 { margin: 0; font-size: 22px; line-height: 1.25; }
-.welcome-modal p { margin: 0 0 8px; color: #b9aec8; font-size: 14px; line-height: 1.55; }
-.welcome-close { position: absolute; top: 12px; right: 12px; color: #c9b8db; }
-.welcome-button { min-height: 42px; padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px; }
+.welcome-modal { position: relative; width: min(520px,100%); display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 28px 26px 24px; border: 1px solid #d8d8d8; border-radius: 16px; background: #fff; color: #151515; text-align: center; box-shadow: 0 24px 80px #0008; }
+.welcome-modal h2 { margin: 0 0 2px; font-size: 24px; line-height: 1.25; }
+.welcome-modal h2 span { color: #ff6a2a; }
+.welcome-modal p { margin: 0 0 4px; color: #333; font-size: 14px; line-height: 1.65; }
+.welcome-intro strong { color: #ff1678; }
+.welcome-note { color: #555 !important; font-size: 13px !important; }
+.welcome-close { position: absolute; top: 12px; right: 12px; color: #ff4b4b; }
+.welcome-button { min-height: 40px; padding: 9px 20px; display: inline-flex; align-items: center; gap: 8px; }
 
 .input-help,
 .trust-row,
