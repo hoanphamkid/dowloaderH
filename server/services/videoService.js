@@ -58,7 +58,10 @@ export function normalizeInfo(raw, url) {
     (raw.availability && !['public', 'unlisted'].includes(raw.availability))
   )
     throw new AppError('This video is unavailable or requires permission to access.');
-  if (!Number.isFinite(raw.duration) || raw.duration <= 0)
+  const platform = detectPlatform(url);
+  // Instagram often omits duration for public Reels even when direct media
+  // formats are available. Keep those usable; other platforms stay strict.
+  if ((!Number.isFinite(raw.duration) || raw.duration <= 0) && platform !== 'instagram')
     throw new AppError(
       'The duration could not be verified. This media cannot be downloaded safely.',
     );
@@ -123,8 +126,8 @@ export function normalizeInfo(raw, url) {
     url,
     title: raw.title || 'Untitled video',
     thumbnail: /^https?:\/\//.test(raw.thumbnail || '') ? raw.thumbnail : null,
-    duration: raw.duration,
-    platform: detectPlatform(url),
+    duration: Number.isFinite(raw.duration) && raw.duration > 0 ? raw.duration : 0,
+    platform,
     author: raw.uploader || raw.channel || raw.creator || 'Unknown creator',
     formats: options,
   };
