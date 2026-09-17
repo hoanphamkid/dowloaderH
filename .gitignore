@@ -7,3 +7,5 @@ server/temp/*
 *.log
 test-results/
 downloads/
+
+__pycache__/

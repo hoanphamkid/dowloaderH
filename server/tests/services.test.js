@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { TaskQueue } from '../services/queueService.js';
-import { normalizeInfo, publicInfo } from '../services/videoService.js';
+import { baseArgs, normalizeInfo, publicInfo, setProxy } from '../services/videoService.js';
 import { jobDirectory, cleanupOldFiles, removeJobFiles } from '../services/cleanupService.js';
 import { config } from '../config.js';
 import { runProcess } from '../services/processService.js';
@@ -60,6 +60,15 @@ test('rejects DRM, live, restricted, overlong and unknown-duration media', () =>
       'https://example.com',
     ),
   );
+});
+test('yt-dlp loads only the project-bundled extractor plugins', () => {
+  setProxy('http://127.0.0.1:3128');
+  const args = baseArgs();
+  const pluginFlag = args.indexOf('--plugin-dirs');
+  const disableDefaultsFlag = args.indexOf('--no-plugin-dirs');
+  assert.notEqual(pluginFlag, -1);
+  assert.ok(disableDefaultsFlag > -1 && disableDefaultsFlag < pluginFlag);
+  assert.equal(args[pluginFlag + 1], config.root);
 });
 test('queue limits concurrency and recovers after task errors', async () => {
   const q = new TaskQueue(1, 2);

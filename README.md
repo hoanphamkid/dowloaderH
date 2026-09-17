@@ -67,6 +67,14 @@ Backend mặc định không tự restart khi sửa file để tránh cắt ngan
 
 Startup dừng và báo lỗi rõ nếu yt-dlp/FFmpeg không chạy được. `npm run build` và unit test không cần hai executable này trên PATH (kiểm thử tải thực tế thì cần).
 
+## Hỗ trợ video Threads
+
+Backend dùng extractor Threads được đóng gói tại `yt-dlp-threads/`, dựa trên [tribixbite/yt-dlp-threads](https://github.com/tribixbite/yt-dlp-threads), commit `c4c44141cb10715f94296a808f5d89a0d24dfe94` (Unlicense). Extractor chọn đúng shortcode của bài và đọc URL MP4 từ dữ liệu Threads dành cho trình thu thập link công khai. Nó không dùng cookie hay tài khoản; bài riêng tư, yêu cầu đăng nhập, bài ảnh/chữ và carousel nhiều video không được hỗ trợ. Threads có thể đổi định dạng trang khiến extractor cần cập nhật.
+
+yt-dlp chỉ nạp plugin đã review trong repo: `--no-plugin-dirs` tắt thư mục mặc định, sau đó `--plugin-dirs` trỏ tới root dự án. Docker dùng bản yt-dlp Python nên hỗ trợ plugin này. Bản `yt-dlp.exe` standalone trên Windows không nạp plugin Python; muốn chạy Threads local cần cài yt-dlp bằng Python/pip.
+
+Kiểm tra extractor bằng fixture offline: `python -m unittest discover -s yt-dlp-threads/tests`.
+
 ## Tính năng
 
 - Dark UI responsive, chọn Single URL / Batch URLs, paste clipboard, dropdown định dạng thực tế, thumbnail, tác giả, thời lượng, nền tảng.

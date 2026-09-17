@@ -12,7 +12,11 @@ export function baseArgs() {
   if (!proxyUrl) throw new AppError('Media service is not ready.', 503);
   const args = [
     '--ignore-config',
+    // Disable default/user plugin directories, then load only this reviewed,
+    // repository-bundled plugin. Never fetch plugins at runtime.
     '--no-plugin-dirs',
+    '--plugin-dirs',
+    config.root,
     '--no-playlist',
     '--playlist-items',
     '1',
