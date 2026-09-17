@@ -448,51 +448,6 @@ export default function App() {
                 <ArrowUpRight size={12} />
               </p>
             </section>
-            <section id="how-it-works" className="how-section">
-              <div className="section-top">
-                <div>
-                  <span className="section-kicker">ĐƠN GIẢN HƠN. NHIỀU CẢM HỨNG HƠN.</span>
-                  <h2>Từ liên kết đến thư viện chỉ trong vài giây.</h2>
-                </div>
-                <span className="three-steps">
-                  BA BƯỚC ĐƠN GIẢN <ArrowDownToLine size={14} />
-                </span>
-              </div>
-              <div className="steps">
-                <article>
-                  <div className="step-head">
-                    <span className="step-icon">
-                      <Link2 size={21} />
-                    </span>
-                    <span className="step-number">01</span>
-                  </div>
-                  <h3>Sao chép liên kết</h3>
-                  <p>Tìm video công khai bạn yêu thích và sao chép liên kết từ nền tảng quen thuộc.</p>
-                </article>
-                <article>
-                  <div className="step-head">
-                    <span className="step-icon">
-                      <Layers size={21} />
-                    </span>
-                    <span className="step-number">02</span>
-                  </div>
-                  <h3>Làm theo ý bạn</h3>
-                  <p>Dán liên kết ở trên, rồi chọn chất lượng video hoặc định dạng âm thanh.</p>
-                </article>
-                <article>
-                  <div className="step-head">
-                    <span className="step-icon">
-                      <ArrowDownToLine size={21} />
-                    </span>
-                    <span className="step-number">03</span>
-                  </div>
-                  <h3>Lưu về thiết bị</h3>
-                  <p>
-                    Nhấn tải xuống để lưu vào thiết bị. Sẵn sàng xem bất cứ khi nào bạn muốn.
-                  </p>
-                </article>
-              </div>
-            </section>
             <section className="privacy-strip">
               <div className="privacy-icon">
                 <ShieldCheck size={23} />
@@ -528,7 +483,6 @@ export default function App() {
           <span className="footer-caption">Dành cho những khoảnh khắc đáng lưu giữ.</span>
         </div>
         <div>
-          <button onClick={() => section('how-it-works')}>Cách hoạt động</button>
           <span>Tôn trọng người sáng tạo. Tải xuống có trách nhiệm.</span>
         </div>
       </footer>

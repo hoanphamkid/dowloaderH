@@ -567,7 +567,6 @@ button:not(:disabled):active {
   gap: 4px;
   line-height: 1.7;
 }
-.how-section,
 .privacy-strip,
 .results,
 .history-page {
@@ -592,61 +591,6 @@ button:not(:disabled):active {
   letter-spacing: -0.8px;
   font-weight: 650;
   margin: 10px 0 0;
-}
-.three-steps {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 8px;
-  letter-spacing: 1.1px;
-  color: #746f7d;
-  padding-top: 20px;
-}
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 26px;
-}
-.steps article {
-  border: 1px solid #29252f;
-  background: linear-gradient(130deg, #19161e, #131217);
-  border-radius: 12px;
-  padding: 22px 25px 24px;
-}
-.step-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.step-icon {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  color: #b799e9;
-  background: #272032;
-  border: 1px solid #3d304c;
-  border-radius: 10px;
-}
-.step-number {
-  font-family: Manrope, sans-serif;
-  font-size: 31px;
-  font-weight: 650;
-  color: #37303f;
-  letter-spacing: -1px;
-}
-.steps h3 {
-  font-size: 14px;
-  font-weight: 550;
-  margin: 20px 0 9px;
-}
-.steps p {
-  color: #908797;
-  font-size: 11px;
-  line-height: 1.9;
-  margin: 0;
-  max-width: 250px;
 }
 .privacy-strip {
   margin-top: 25px;
@@ -1085,7 +1029,6 @@ footer button {
   }
 }
 @media (max-width: 1150px) {
-  .how-section,
   .privacy-strip,
   .results,
   .history-page {
@@ -1148,23 +1091,8 @@ footer button {
   .platform {
     font-size: 9px;
   }
-  .how-section {
-    margin-top: 50px;
-  }
   .section-top h2 {
     font-size: 22px;
-  }
-  .three-steps {
-    display: none;
-  }
-  .steps {
-    gap: 10px;
-  }
-  .steps article {
-    padding: 18px;
-  }
-  .steps p {
-    font-size: 10px;
   }
   .privacy-strip > span {
     display: none;
@@ -1327,7 +1255,6 @@ footer button {
   .platform-section > p svg {
     display: none;
   }
-  .how-section,
   .results,
   .history-page {
     margin-top: 40px;
@@ -1340,25 +1267,6 @@ footer button {
     font-size: 21px;
     line-height: 1.5;
     letter-spacing: -0.5px;
-  }
-  .steps {
-    grid-template-columns: 1fr;
-    margin-top: 20px;
-    gap: 12px;
-  }
-  .steps article {
-    padding: 20px 22px;
-  }
-  .steps h3 {
-    margin-top: 15px;
-    font-size: 14px;
-  }
-  .steps p {
-    max-width: none;
-    font-size: 11px;
-  }
-  .step-number {
-    font-size: 32px;
   }
   .privacy-strip {
     padding: 18px 16px;
