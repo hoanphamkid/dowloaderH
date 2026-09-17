@@ -5,7 +5,6 @@ export const platforms = [
   ['instagram', 'Instagram', '#e575b7'],
   ['facebook', 'Facebook', '#619aff'],
   ['twitter', 'Twitter / X', '#e7e7ed'],
-  ['reddit', 'Reddit', '#ff7948'],
   ['threads', 'Threads', '#f4f3fa'],
 ];
 export default function PlatformIcon({ platform, size = 20 }) {
