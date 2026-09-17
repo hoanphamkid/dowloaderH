@@ -8,6 +8,7 @@ import { baseArgs, normalizeInfo, publicInfo, setProxy } from '../services/video
 import { jobDirectory, cleanupOldFiles, removeJobFiles } from '../services/cleanupService.js';
 import { config, root } from '../config.js';
 import { runProcess } from '../services/processService.js';
+import { donorName } from '../services/donationService.js';
 const raw = {
   title: 'Test',
   duration: 10,
@@ -42,6 +43,20 @@ test('formats expose actual streams and explicit MP3 conversions', () => {
   assert.equal(
     info.formats.some((f) => f.height === 2160),
     false,
+  );
+});
+test('recovers donor names from transfer descriptions when webhook names are missing', () => {
+  assert.equal(
+    donorName('Một người bạn', 'Qagmnd9566 APP2232376 1 Thanh toan QR FT26261866529074'),
+    'Qagmnd9566',
+  );
+  assert.equal(
+    donorName('Một người bạn', 'Duong Thuy Linh chuyen tien FT26261537966421'),
+    'Duong Thuy Linh',
+  );
+  assert.equal(
+    donorName('Một người bạn', 'Nguyen Van An chuyen tien web luu dc link ytb'),
+    'Nguyen Van An',
   );
 });
 test('rejects DRM, live, restricted, overlong and unknown-duration media', () => {

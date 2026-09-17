@@ -2,8 +2,30 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { root } from '../config.js';
 const file = process.env.DONATIONS_FILE || path.join(root, 'server', 'donations.json');
+export function donorName(name, message = '') {
+  const supplied = String(name || '').trim();
+  const normalized = supplied
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLocaleLowerCase();
+  if (supplied && normalized !== 'mot nguoi ban') return supplied;
+
+  const fromMessage = String(message)
+    .replace(/\bAPP\d+\b/gi, ' ')
+    .replace(/\b(?:FT|QR|REF|TXN)[A-Z0-9_-]+\b/gi, ' ')
+    .replace(/\b(?:thanh toan|chuyen tien|ung ho|donate)\b[\s\S]*$/i, ' ')
+    .replace(/\s+\d+\s*$/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return fromMessage || supplied || 'Một người bạn';
+}
 export async function listDonations() {
-  try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch { return []; }
+  try {
+    const donations = JSON.parse(await fs.readFile(file, 'utf8'));
+    return donations.map((item) => ({ ...item, name: donorName(item.name, item.message) }));
+  } catch {
+    return [];
+  }
 }
 export async function recordDonation(payload = {}) {
   // SePay may send the transaction directly or wrapped in `data`.
