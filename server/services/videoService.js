@@ -59,13 +59,16 @@ export function normalizeInfo(raw, url) {
   )
     throw new AppError('This video is unavailable or requires permission to access.');
   const platform = detectPlatform(url);
+  const detectedDuration = Number.isFinite(raw.duration) && raw.duration > 0
+    ? raw.duration
+    : Math.max(0, ...(raw.formats || []).map((format) => Number(format.duration) || 0));
   // Instagram often omits duration for public Reels even when direct media
   // formats are available. Keep those usable; other platforms stay strict.
-  if ((!Number.isFinite(raw.duration) || raw.duration <= 0) && platform !== 'instagram')
+  if (detectedDuration <= 0 && platform !== 'instagram')
     throw new AppError(
       'The duration could not be verified. This media cannot be downloaded safely.',
     );
-  if (raw.duration > config.maxDuration)
+  if (detectedDuration > config.maxDuration)
     throw new AppError(`Video exceeds the ${Math.floor(config.maxDuration / 60)} minute limit.`);
   const formats = (raw.formats || (raw.url ? [raw] : [])).filter(
     (f) =>
@@ -126,7 +129,7 @@ export function normalizeInfo(raw, url) {
     url,
     title: raw.title || 'Untitled video',
     thumbnail: /^https?:\/\//.test(raw.thumbnail || '') ? raw.thumbnail : null,
-    duration: Number.isFinite(raw.duration) && raw.duration > 0 ? raw.duration : 0,
+    duration: detectedDuration,
     platform,
     author: raw.uploader || raw.channel || raw.creator || 'Unknown creator',
     formats: options,

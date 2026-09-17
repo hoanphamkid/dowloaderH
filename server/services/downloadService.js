@@ -88,7 +88,7 @@ export function createDownload(request) {
   queue
     .add(
       async () => {
-        update(job, { state: 'fetching', queuePosition: 0 });
+        update(job, { state: 'fetching', queuePosition: 0, progress: 2 });
         // Re-extract metadata instead of trusting format selectors from the browser.
         const info = await getInfo(request.url);
         const format = info.formats.find(
@@ -98,7 +98,7 @@ export function createDownload(request) {
           throw new AppError('This format is no longer available. Analyze the URL again.');
         const dir = jobDirectory(job.id);
         await fs.mkdir(dir, { recursive: true });
-        update(job, { state: 'preparing' });
+        update(job, { state: 'preparing', progress: 5 });
         const args = [
           ...baseArgs(),
           '--no-simulate',
