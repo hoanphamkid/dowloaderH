@@ -15,7 +15,9 @@ test('HTTP contract, validation, origin checks, security headers and SSRF errors
     const health = await fetch(base + '/api/health');
     assert.equal(health.status, 200);
     assert.equal((await health.json()).status, 'ok');
-    assert.ok(health.headers.get('content-security-policy'));
+    const contentSecurityPolicy = health.headers.get('content-security-policy');
+    assert.ok(contentSecurityPolicy);
+    assert.match(contentSecurityPolicy, /media-src[^;]*https:/);
     for (const body of [{}, { url: 1 }, { url: 'https://example.com', args: '--exec calc' }])
       assert.equal((await post('/video/info', body)).status, 400);
     const blocked = await post('/video/info', { url: 'http://127.0.0.1/' });

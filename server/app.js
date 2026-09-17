@@ -24,6 +24,7 @@ export function createApp(versions = {}) {
       contentSecurityPolicy: {
         directives: {
           'img-src': ["'self'", 'https:', 'http:', 'data:'],
+          'media-src': ["'self'", 'https:', 'http:', 'blob:'],
           'script-src': ["'self'"],
           'connect-src': ["'self'"],
           'upgrade-insecure-requests': null,
