@@ -16,6 +16,7 @@ const video = {
   duration: 12,
   platform: 'youtube',
   thumbnail: null,
+  previewUrl: 'https://example.com/preview.mp4',
   formats: [
     { id: 'video-720', type: 'video', label: '720p · MP4', ext: 'mp4' },
     { id: 'mp3-128', type: 'audio', label: 'MP3 · 128 kbps (converted)', ext: 'mp3', bitrate: 128 },
@@ -61,6 +62,17 @@ async function analyze(user) {
   await screen.findByRole('heading', { name: video.title });
 }
 describe('downloader user flows', () => {
+  it('opens and closes the video preview player', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await analyze(user);
+    await user.click(screen.getByRole('button', { name: `Xem video ${video.title}` }));
+    expect(screen.getByRole('dialog', { name: `Xem video ${video.title}` })).toBeTruthy();
+    expect(document.querySelector('video')?.getAttribute('src')).toBe(video.previewUrl);
+    await user.click(screen.getByRole('button', { name: 'Đóng video' }));
+    expect(screen.queryByRole('dialog', { name: `Xem video ${video.title}` })).toBeNull();
+  });
+
   it('validates invalid input before requesting metadata', async () => {
     const user = userEvent.setup();
     render(<App />);

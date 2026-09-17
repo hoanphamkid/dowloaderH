@@ -125,10 +125,23 @@ export function normalizeInfo(raw, url) {
       });
   }
   if (!options.length) throw new AppError('No supported, unprotected media formats were found.');
+  const preview = formats
+    .filter(
+      (f) =>
+        f.vcodec !== 'none' &&
+        ['mp4', 'webm'].includes(f.ext) &&
+        ['http', 'https'].includes(f.protocol || 'https'),
+    )
+    .sort((a, b) => {
+      const audioDifference = Number(b.acodec !== 'none') - Number(a.acodec !== 'none');
+      if (audioDifference) return audioDifference;
+      return (b.height || 0) - (a.height || 0);
+    })[0];
   return {
     url,
     title: raw.title || 'Untitled video',
     thumbnail: /^https?:\/\//.test(raw.thumbnail || '') ? raw.thumbnail : null,
+    previewUrl: preview?.url || null,
     duration: detectedDuration,
     platform,
     author: raw.uploader || raw.channel || raw.creator || 'Unknown creator',

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Download, Clock, CheckCircle2, LoaderCircle, Music2, Video, ImageOff } from 'lucide-react';
+import { Download, Clock, CheckCircle2, LoaderCircle, Music2, Video, ImageOff, Play, X } from 'lucide-react';
 import PlatformIcon from './PlatformIcon.jsx';
 import { duration, fileSize } from '../utils/format.js';
 import { platformLabel } from '../utils/platform.js';
@@ -22,6 +22,7 @@ const labels = {
 export default function VideoCard({ item, onSelect, onDownload, onSave }) {
   const [tab, setTab] = useState(item.video?.formats[0]?.type || 'video');
   const [imageFailed, setImageFailed] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia?.('(max-width: 760px)').matches,
   );
@@ -42,6 +43,14 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
     query.addEventListener?.('change', update);
     return () => query.removeEventListener?.('change', update);
   }, []);
+  useEffect(() => {
+    if (!previewOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setPreviewOpen(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [previewOpen]);
   if (!video)
     return (
       <article className="error-card">
@@ -67,7 +76,13 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
     : Math.round(job?.progress || 0);
   return (
     <article className="video-card">
-      <div className="preview-image">
+      <button
+        type="button"
+        className={`preview-image ${video.previewUrl ? 'is-playable' : ''}`}
+        onClick={() => video.previewUrl && setPreviewOpen(true)}
+        disabled={!video.previewUrl}
+        aria-label={video.previewUrl ? `Xem video ${video.title}` : 'Không có bản xem trước'}
+      >
         {video.thumbnail && !imageFailed ? (
           <img
             src={video.thumbnail}
@@ -78,8 +93,9 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
         ) : (
           <ImageOff size={36} />
         )}
+        {video.previewUrl && <span className="preview-play"><Play size={24} fill="currentColor" /></span>}
         <span className="duration">{duration(video.duration)}</span>
-      </div>
+      </button>
       <div className="video-details">
         <div className="eyebrow">
           <PlatformIcon platform={video.platform} size={15} />
@@ -171,6 +187,24 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
           </div>
         )}
       </div>
+      {previewOpen && (
+        <div className="video-preview-backdrop" role="presentation" onMouseDown={() => setPreviewOpen(false)}>
+          <div
+            className="video-preview-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Xem video ${video.title}`}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button className="video-preview-close" onClick={() => setPreviewOpen(false)} aria-label="Đóng video">
+              <X size={22} />
+            </button>
+            <video src={video.previewUrl} poster={video.thumbnail || undefined} controls autoPlay playsInline>
+              Trình duyệt của bạn không hỗ trợ phát video.
+            </video>
+          </div>
+        </div>
+      )}
     </article>
   );
 }

@@ -35,6 +35,7 @@ const raw = {
 test('formats expose actual streams and explicit MP3 conversions', () => {
   const info = normalizeInfo(raw, 'https://youtube.com/watch?v=x');
   assert.equal(info.formats[0].selector, '137+140');
+  assert.equal(info.previewUrl, 'https://example.com/v');
   assert.equal(info.formats[0].ext, 'mp4');
   assert.equal(info.formats.filter((f) => f.bitrate).length, 4);
   assert.equal(publicInfo(info).formats[0].selector, undefined);
