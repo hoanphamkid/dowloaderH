@@ -6,6 +6,7 @@ import { existsSync } from 'node:fs';
 import { config, root } from './config.js';
 import routes from './routes/videoRoutes.js';
 import { AppError } from './utils/errors.js';
+import { listDonations, recordDonation } from './services/donationService.js';
 export function createApp(versions = {}) {
   const app = express();
   // Render runs the service behind a reverse proxy. Trust the first proxy so
@@ -81,6 +82,11 @@ export function createApp(versions = {}) {
   app.get('/api/visitors/online', (req, res) => {
     pruneVisitors();
     res.json({ online: visitors.size });
+  });
+  app.get('/api/donations', async (req, res) => res.json({ donations: await listDonations() }));
+  app.post('/api/donations/webhook', async (req, res) => {
+    await recordDonation(req.body);
+    res.status(200).json({ received: true });
   });
   app.use('/api', routes);
   app.use('/api', (req, res) => res.status(404).json({ error: 'API endpoint not found.' }));

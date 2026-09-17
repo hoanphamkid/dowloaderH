@@ -34,7 +34,8 @@ export default function App() {
     [maxBatch, setMaxBatch] = useState(10),
     [online, setOnline] = useState(null),
     [menu, setMenu] = useState(false),
-    [showNotice, setShowNotice] = useState(true);
+    [showNotice, setShowNotice] = useState(true),
+    [donations, setDonations] = useState([]);
   const { history, add, clear } = useHistory();
   const stops = useRef(new Map()),
     itemsRef = useRef(items),
@@ -53,6 +54,9 @@ export default function App() {
     return () => {
       for (const stop of stops.current.values()) stop();
     };
+  }, []);
+  useEffect(() => {
+    api('/donations').then((data) => setDonations(data.donations || [])).catch(() => {});
   }, []);
   useEffect(() => {
     const key = 'hoanpham-visitor-id';
@@ -491,6 +495,7 @@ export default function App() {
         </div>
         <img className="donate-section-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" />
       </section>
+      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => <span key={item.id}>💜 {item.name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ</span>)}</div></section>}
       <footer>
         <div>
           <span className="footer-symbol">

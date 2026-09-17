@@ -730,6 +730,10 @@ footer button {
   background: linear-gradient(135deg, #1c1528, #120f19);
 }
 .donate-section-copy { max-width: 430px; display: flex; flex-direction: column; gap: 8px; }
+.supporters-section { margin: 0 5.4% 30px; padding: 22px 24px; border: 1px solid #3d3152; border-radius: 16px; background: #15111d; }
+.supporters-section h3 { margin: 0 0 14px; color: #f4eefc; }
+.supporters-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.supporters-list span { padding: 8px 12px; border-radius: 999px; background: #241b32; color: #cfc0df; font-size: 13px; }
 .donate-section-copy h2 { margin: 0; color: #f4eefc; font-size: 24px; }
 .donate-section-copy p:not(.eyebrow) { margin: 0 0 6px; color: #b9aec8; font-size: 13px; line-height: 1.55; }
 .donate-section-copy strong { color: #f4eefc; font-size: 14px; }
