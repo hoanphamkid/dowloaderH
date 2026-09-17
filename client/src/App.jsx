@@ -498,16 +498,9 @@ export default function App() {
         )}
       </main>
       <section className="donate-section" aria-labelledby="donate-section-title">
-        <div className="donate-section-copy">
-          <p className="eyebrow">ỦNG HỘ DỰ ÁN</p>
-          <h2 id="donate-section-title">Giúp tôi duy trì website</h2>
-          <p>Nếu website hữu ích với bạn, một lời ủng hộ sẽ giúp tôi duy trì và phát triển dự án.</p>
-          <strong>PHẠM THANH HOÀN</strong>
-          <span>0945459491</span>
-        </div>
-        <img className="donate-section-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" />
+        <div className="donate-heading"><h2 id="donate-section-title">♡ Ủng hộ dự án ♡</h2><p>Mỗi đóng góp giúp mình duy trì và cải thiện website. Cảm ơn bạn rất nhiều!</p></div>
+        <div className="donate-columns"><div className="donate-card"><h3>☕ Give me a coffee</h3><img className="donate-section-qr" src="/images/qr-payment.png" alt="Mã QR ủng hộ Phạm Thanh Hoàn" /><strong>PHẠM THANH HOÀN</strong><span>0945459491 · Ngân hàng MB</span></div><div className="donate-card donation-history"><h3>🎁 Lịch sử đóng góp</h3><div className="supporters-list">{donations.length ? donations.map((item) => { const message = cleanDonationMessage(item.message); return <article key={item.id}><small>{new Date(item.createdAt).toLocaleDateString('vi-VN')}</small><b>{donorName(item)}</b><em>+{new Intl.NumberFormat('vi-VN').format(item.amount)}đ</em>{message && <i>{message}</i>}</article>; }) : <p>Chưa có lượt ủng hộ nào. Bạn sẽ là người đầu tiên!</p>}</div></div></div>
       </section>
-      {donations.length > 0 && <section className="supporters-section"><h3>Những người đã ủng hộ</h3><div className="supporters-list">{donations.map((item) => { const message = cleanDonationMessage(item.message); const name = donorName(item); return <span key={item.id}>💜 {name} · {new Intl.NumberFormat('vi-VN').format(item.amount)}đ{message && ` · “${message}”`}</span>; })}</div></section>}
       <footer>
         <div>
           <span className="footer-symbol">
