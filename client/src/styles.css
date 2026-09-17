@@ -750,8 +750,10 @@ footer button {
 .donate-card > span { color: #c9b8db; font-size: 13px; }
 .donate-card .donate-section-qr { width: 210px; height: 210px; margin: 4px 0 8px; }
 .donation-history { align-items: stretch; }
-.donation-history .supporters-list { display: flex; flex-direction: column; gap: 10px; max-height: 290px; overflow-y: auto; }
-.donation-history .supporters-list article { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 5px 10px; padding: 12px; border: 1px solid #3d3152; border-radius: 8px; background: #21182d; color: #f4eefc; }
+.donation-history .supporters-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; max-height: 290px; overflow-x: hidden; overflow-y: auto; }
+.donation-history .supporters-list article { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 10px; min-width: 0; padding: 12px; border: 1px solid #3d3152; border-radius: 8px; background: #21182d; color: #f4eefc; }
+.donation-history .supporters-list article b,
+.donation-history .supporters-list article i { min-width: 0; overflow-wrap: anywhere; }
 .donation-history article small { color: #ff9a5c; }
 .donation-history article em { color: #00a86b; font-style: normal; }
 .donation-history article i { grid-column: 1 / -1; color: #ff7417; font-size: 13px; }
