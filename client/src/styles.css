@@ -1368,7 +1368,7 @@ footer button {
     transition: none !important;
   }
 }
-.welcome-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: rgba(8,6,14,.72); backdrop-filter: blur(6px); }
+.welcome-backdrop { position: fixed; inset: 0; z-index: 60; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(8,6,14,.72); backdrop-filter: blur(6px); }
 .welcome-modal { position: relative; width: min(520px,100%); display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 28px 26px 24px; border: 1px solid #d8d8d8; border-radius: 16px; background: #fff; color: #151515; text-align: center; box-shadow: 0 24px 80px #0008; }
 .welcome-modal h2 { margin: 0 0 2px; font-size: 24px; line-height: 1.25; }
 .welcome-modal h2 span { color: #ff6a2a; }
@@ -1377,6 +1377,11 @@ footer button {
 .welcome-note { color: #555 !important; font-size: 13px !important; }
 .welcome-close { position: absolute; top: 12px; right: 12px; color: #ff4b4b; }
 .welcome-button { min-height: 40px; padding: 9px 20px; display: inline-flex; align-items: center; gap: 8px; }
+@media (max-width: 560px) {
+  .welcome-backdrop { padding: 14px 12px; }
+  .welcome-modal { max-height: calc(100dvh - 28px); overflow-y: auto; padding: 28px 18px 22px; border-radius: 20px; }
+  .welcome-modal h2 { font-size: 23px; }
+}
 
 .input-help,
 .trust-row,
