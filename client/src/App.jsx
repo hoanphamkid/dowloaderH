@@ -200,13 +200,13 @@ export default function App() {
         <button
           className="logo"
           onClick={() => navigate('home')}
-          aria-label="HoanPhamdowloader home"
+          aria-label="Hoan Pham Downloader home"
         >
           <span className="logo-icon">
             <ArrowDownToLine size={23} />
           </span>
           <span className="brand-copy">
-            <span className="brand-name">HoanPham</span><span className="logo-light">dowloader</span>
+            <span className="brand-name">Hoan Pham</span><span className="logo-light">Downloader</span>
             <small>CREATED BY HOAN PHAM</small>
           </span>
         </button>
@@ -261,7 +261,7 @@ export default function App() {
                 <span>NỘI DUNG BẠN YÊU THÍCH, LUÔN SẴN SÀNG</span>
               </div>
               <h1>
-                Lưu video <span>bạn yêu thích</span>
+                Hoan Pham <span>Downloader</span>
               </h1>
               <p className="hero-subtitle">
                 Dán liên kết video từ mạng xã hội và tải xuống chỉ trong vài giây.
@@ -479,7 +479,7 @@ export default function App() {
           <span className="footer-symbol">
             <ArrowDownToLine size={16} />
           </span>
-          <span>HoanPhamdowloader</span>
+          <span>Hoan Pham Downloader</span>
           <span className="footer-caption">Dành cho những khoảnh khắc đáng lưu giữ.</span>
         </div>
         <div>
