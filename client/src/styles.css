@@ -353,20 +353,20 @@ button:not(:disabled):active {
   display: flex;
   align-items: center;
   position: relative;
-  border: 1px solid #3c344d;
-  background: #100f16;
+  border: 2px solid #ad8fe0;
+  background: #382c4b;
   border-radius: 9px;
-  padding: 7px;
-  gap: 9px;
+  padding: 11px;
+  gap: 12px;
   box-shadow: 0 0 0 3px #b598ff04;
 }
 .input-row:focus-within {
-  border-color: #9676d7;
-  box-shadow: 0 0 0 3px #b598ff0c;
+  border-color: #c9adff;
+  box-shadow: 0 0 0 4px #b598ff30;
 }
 .input-icon {
   margin-left: 9px;
-  color: #766d85;
+  color: #c7b1e5;
 }
 .input-row input,
 .input-row textarea {
@@ -376,26 +376,39 @@ button:not(:disabled):active {
   color: #f1ebfc;
   min-width: 0;
   flex: 1;
-  padding: 9px 3px;
-  font-size: 13px;
+  padding: 16px 3px;
+  font-size: 18px;
   resize: vertical;
 }
 .input-row input::placeholder,
 .input-row textarea::placeholder {
-  color: #797182;
+  color: #e1d3f3;
 }
 .paste {
-  font-size: 10px;
-  padding: 7px 9px;
-  border: 1px solid #37313f;
-  border-radius: 5px;
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 52px;
+  flex-shrink: 0;
+  padding: 12px 18px;
+  background: #99e6db;
+  border: 1px solid #bcfff3;
+  border-radius: 7px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  color: #bbb1c9;
+  justify-content: center;
+  gap: 8px;
+  color: #113b38;
 }
 .paste:hover {
-  background: #292232;
+  background: #b9fff0;
+}
+.paste svg {
+  width: 20px;
+  height: 20px;
+}
+.paste:focus-visible {
+  outline: 3px solid #bcfff3;
+  outline-offset: 3px;
 }
 .primary {
   background: linear-gradient(110deg, #ad91f4, #936dea);
@@ -1186,8 +1199,8 @@ footer button {
     gap: 6px;
   }
   .input-row input {
-    font-size: 12px;
-    width: 60%;
+    font-size: 16px;
+    width: 0;
     padding: 12px 0;
   }
   .input-row .analyze {
@@ -1200,10 +1213,8 @@ footer button {
     width: 17px;
   }
   .paste {
-    padding: 7px;
-  }
-  .paste span {
-    display: none;
+    min-height: 48px;
+    padding: 10px 12px;
   }
   .input-help {
     font-size: 8px;
