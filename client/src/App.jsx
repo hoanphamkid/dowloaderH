@@ -310,7 +310,7 @@ export default function App() {
                 Hoan Pham <span>Downloader</span>
               </h1>
               <p className="hero-subtitle">
-                Dán liên kết video từ mạng xã hội và tải xuống chỉ trong vài giây.
+                Dán liên kết video từ bất kỳ website công khai nào và tải xuống chỉ trong vài giây.
                 <br />
                 Nhanh chóng, đơn giản và tiện lợi.
               </p>
