@@ -17,6 +17,7 @@ export function baseArgs() {
     // directory; disabling default plugin directories breaks YouTube.
     '--plugin-dirs',
     root,
+    ...(config.bgutilPluginDir ? ['--plugin-dirs', config.bgutilPluginDir] : []),
     '--no-playlist',
     '--playlist-items',
     '1',

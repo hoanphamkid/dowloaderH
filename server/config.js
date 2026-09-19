@@ -32,6 +32,9 @@ export const config = {
   bgutilServerHome:
     process.env.BGUTIL_SERVER_HOME ||
     (process.platform === 'linux' ? '/opt/bgutil-ytdlp-pot-provider/server' : ''),
+  bgutilPluginDir:
+    process.env.BGUTIL_PLUGIN_DIR ||
+    (process.platform === 'linux' ? '/opt/bgutil-ytdlp-pot-provider/plugin' : ''),
   temp: path.join(root, 'server', 'temp'),
 };
 // Relative executable paths are always rooted at the project, not the current job directory.
