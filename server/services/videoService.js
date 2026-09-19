@@ -47,7 +47,7 @@ export function baseArgs() {
       args.indexOf('--ffmpeg-location'),
       0,
       '--extractor-args',
-      `youtubepot-bgutilscript:server_home=${config.bgutilServerHome}`,
+      'youtubepot-bgutilhttp:base_url=http://127.0.0.1:4416',
     );
   return args;
 }

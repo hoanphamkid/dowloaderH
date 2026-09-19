@@ -13,4 +13,4 @@ COPY . .
 ENV NODE_ENV=production HOST=0.0.0.0 DONATIONS_FILE=/app/server/donations.json
 RUN npm run build -w client
 EXPOSE 10000
-CMD ["npm", "start"]
+CMD ["sh", "-c", "node /opt/bgutil-ytdlp-pot-provider/server/build/main.js --host 127.0.0.1 & exec npm start"]
