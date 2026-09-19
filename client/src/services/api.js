@@ -1,7 +1,7 @@
 export const API_URL =
   import.meta.env.VITE_API_URL ||
   (typeof window !== 'undefined' && window.location.hostname === 'hoanpham-downloader.vercel.app'
-    ? 'https://dowloaderh-api.onrender.com'
+    ? 'https://commerce-throat-sim-ind.trycloudflare.com'
     : '');
 export async function api(path, body) {
   let response;
