@@ -24,6 +24,9 @@ export function validate(schema) {
     const result = schema.safeParse(req.body);
     if (!result.success)
       return res.status(400).json({
+        success: false,
+        code: 'INVALID_URL',
+        message: result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; '),
         error: result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; '),
       });
     req.body = result.data;

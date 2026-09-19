@@ -27,7 +27,7 @@ export async function startProxy() {
           path: url.pathname + url.search,
           method: req.method,
           headers,
-          timeout: 30000,
+          timeout: 120000,
         },
         (response) => {
           res.writeHead(response.statusCode, response.headers);
@@ -56,7 +56,7 @@ export async function startProxy() {
       const { address, family } = await resolvePublic(url.hostname);
       if (client.destroyed) return;
       const upstream = track(net.connect({ host: address, family, port: Number(url.port || 443) }));
-      upstream.setTimeout(30000, () => upstream.destroy());
+      upstream.setTimeout(600000, () => upstream.destroy());
       upstream.on('connect', () => {
         client.write('HTTP/1.1 200 Connection Established\r\n\r\n');
         if (head.length) upstream.write(head);

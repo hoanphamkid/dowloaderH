@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { AppError, processError } from '../utils/errors.js';
+import { AppError, ERROR_CODES, fail, processError } from '../utils/errors.js';
 export const children = new Set();
 export function killTree(child) {
   if (!child.pid) return;
@@ -36,7 +36,7 @@ export function runProcess(
       buffer = '',
       failure;
     const timer = setTimeout(() => {
-      failure = new AppError('The request timed out. Please try a shorter video.', 504);
+      failure = fail(ERROR_CODES.DOWNLOAD_TIMEOUT, 504);
       killTree(child);
     }, timeout);
     const abortTimer = shouldAbort
@@ -69,11 +69,12 @@ export function runProcess(
       clearInterval(abortTimer);
       children.delete(child);
       reject(
-        new AppError(
+        fail(
+          ERROR_CODES.SERVER_ERROR,
+          503,
           error.code === 'ENOENT'
             ? `${command} is not installed. See README for setup.`
             : 'Unable to start the media processor.',
-          503,
         ),
       );
     });

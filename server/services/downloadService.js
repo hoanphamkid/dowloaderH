@@ -6,6 +6,7 @@ import { AppError } from '../utils/errors.js';
 import { sanitizeFilename } from '../utils/filename.js';
 import { getInfo, baseArgs } from './videoService.js';
 import { detectPlatform } from '../utils/url.js';
+import { assertRealMediaFile } from '../utils/mediaFile.js';
 import { runProcess } from './processService.js';
 import { TaskQueue } from './queueService.js';
 import { jobDirectory, removeJobFiles } from './cleanupService.js';
@@ -20,6 +21,7 @@ export function jobStatus(job) {
     queuePosition: job.queuePosition || 0,
     sending: Boolean(job.sending),
     error: job.error || job.deliveryError || null,
+    code: job.code || null,
     filename: job.filename || null,
   };
 }
@@ -178,6 +180,7 @@ export function createDownload(request) {
           throw new AppError('The output exceeds the file size limit.', 413);
         job.file = outputPath;
         job.filename = sanitizeFilename(info.title) + path.extname(outputPath);
+        await assertRealMediaFile(outputPath);
         job.finishedAt = Date.now();
         await persistCompletedJob(job);
         update(job, { state: 'completed', progress: 100 });
@@ -189,6 +192,7 @@ export function createDownload(request) {
       update(job, {
         state: 'failed',
         error: error instanceof AppError ? error.message : 'Unable to process this download.',
+        code: error instanceof AppError ? error.code : 'SERVER_ERROR',
         finishedAt: Date.now(),
       });
       await removeJobFiles(job.id).catch(() => {});

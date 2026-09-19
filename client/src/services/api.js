@@ -21,10 +21,17 @@ export async function api(path, body) {
   }
   const data = await response
     .json()
-    .catch(() => ({ error: 'Máy chủ tạm thời không khả dụng. Vui lòng thử lại sau.' }));
-  if (!response.ok || data.error) {
-    const error = new Error(data.error || 'Yêu cầu không thành công. Vui lòng thử lại.');
+    .catch(() => ({
+      success: false,
+      code: 'SERVER_ERROR',
+      error: 'Máy chủ tạm thời không khả dụng. Vui lòng thử lại sau.',
+    }));
+  if (!response.ok || data.error || data.success === false) {
+    const error = new Error(
+      data.message || data.error || 'Yêu cầu không thành công. Vui lòng thử lại.',
+    );
     error.status = response.status;
+    error.code = data.code;
     throw error;
   }
   return data;

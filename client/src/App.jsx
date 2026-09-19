@@ -149,7 +149,7 @@ export default function App() {
         })),
       );
     } catch (error) {
-      setError(errorMessage(error.message));
+      setError(errorMessage(error.message, error.code));
     } finally {
       setLoading(false);
     }

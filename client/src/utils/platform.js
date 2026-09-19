@@ -1,5 +1,5 @@
 const domains = {
-  youtube: ['youtube.com', 'youtu.be'],
+  youtube: ['youtube.com', 'youtu.be', 'youtube-nocookie.com', 'youtubekids.com'],
   tiktok: ['tiktok.com'],
   facebook: ['facebook.com', 'fb.watch'],
   instagram: ['instagram.com'],

@@ -5,7 +5,7 @@ import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { config, root } from './config.js';
 import routes from './routes/videoRoutes.js';
-import { AppError } from './utils/errors.js';
+import { AppError, ERROR_CODES, errorBody, fail } from './utils/errors.js';
 import { listDonations, recordDonation } from './services/donationService.js';
 export function createApp(versions = {}) {
   const app = express();
@@ -57,9 +57,19 @@ export function createApp(versions = {}) {
       req.headers.origin !== 'https://dowloaderh.onrender.com' &&
       req.headers.origin !== 'https://hoanpham-downloader.vercel.app'
     )
-      return res.status(403).json({ error: 'Origin is not allowed.' });
+      return res.status(403).json({
+        success: false,
+        code: 'ACCESS_DENIED',
+        message: 'Origin is not allowed.',
+        error: 'Origin is not allowed.',
+      });
     if (req.method === 'POST' && !req.is('application/json'))
-      return res.status(415).json({ error: 'Use application/json.' });
+      return res.status(415).json({
+        success: false,
+        code: 'INVALID_URL',
+        message: 'Use application/json.',
+        error: 'Use application/json.',
+      });
     next();
   });
   app.use(express.json({ limit: '64kb' }));
@@ -90,7 +100,14 @@ export function createApp(versions = {}) {
     res.status(200).json({ received: true });
   });
   app.use('/api', routes);
-  app.use('/api', (req, res) => res.status(404).json({ error: 'API endpoint not found.' }));
+  app.use('/api', (req, res) =>
+    res.status(404).json({
+      success: false,
+      code: 'MEDIA_NOT_FOUND',
+      message: 'API endpoint not found.',
+      error: 'API endpoint not found.',
+    }),
+  );
   const dist = path.join(root, 'client', 'dist');
   if (existsSync(dist)) {
     app.use(express.static(dist));
@@ -98,27 +115,18 @@ export function createApp(versions = {}) {
   }
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
-    const status =
-      error instanceof AppError
-        ? error.status
-        : error.type === 'entity.too.large'
-          ? 413
-          : error instanceof SyntaxError
-            ? 400
-            : error?.message === 'Origin is not allowed.'
-              ? 403
-            : 500;
-    if (status === 500) console.error(error);
-    res.status(status).json({
-      error:
-        status === 500
-          ? 'An unexpected server error occurred.'
-          : error instanceof AppError
-            ? error.message
-            : error?.message === 'Origin is not allowed.'
-              ? error.message
-            : 'Invalid request body.',
-    });
+    let wrapped = error;
+    if (!(error instanceof AppError)) {
+      if (error?.type === 'entity.too.large')
+        wrapped = fail(ERROR_CODES.INVALID_URL, 413, 'Request too large.');
+      else if (error instanceof SyntaxError)
+        wrapped = fail(ERROR_CODES.INVALID_URL, 400, 'Invalid request body.');
+      else if (error?.message === 'Origin is not allowed.')
+        wrapped = fail(ERROR_CODES.ACCESS_DENIED, 403, error.message);
+      else wrapped = fail(ERROR_CODES.SERVER_ERROR, 500);
+    }
+    if (wrapped.status === 500) console.error(error);
+    res.status(wrapped.status).json(errorBody(wrapped));
   });
   return app;
 }

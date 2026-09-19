@@ -26,16 +26,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia?.('(max-width: 760px)').matches,
   );
-  const [smoothProgress, setSmoothProgress] = useState(1);
   const { video, job } = item;
-  useEffect(() => {
-    if (!job || !['queued', 'fetching', 'preparing'].includes(job.state)) return undefined;
-    setSmoothProgress((value) => Math.max(value, job.progress || 1));
-    const timer = window.setInterval(() => {
-      setSmoothProgress((value) => Math.min(99, value + 1));
-    }, 350);
-    return () => window.clearInterval(timer);
-  }, [job?.state, job?.progress]);
   useEffect(() => {
     if (!window.matchMedia) return undefined;
     const query = window.matchMedia('(max-width: 760px)');
@@ -56,7 +47,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
       <article className="error-card">
         <strong>Không thể phân tích liên kết này</strong>
         <span>{item.url}</span>
-        <p>{errorMessage(item.error)}</p>
+        <p>{errorMessage(item.error, item.code)}</p>
       </article>
     );
   const phoneSafe = (format) => !isMobile || ['mp4', 'mp3', 'm4a', 'webm'].includes(format.ext);
@@ -71,9 +62,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
     if (first && selected?.type !== next) onSelect(item.id, first.id);
   };
   const busy = job && !['failed', 'delivered', 'completed', 'expired'].includes(job.state);
-  const progress = ['queued', 'fetching', 'preparing'].includes(job?.state)
-    ? Math.max(1, Math.round(smoothProgress))
-    : Math.round(job?.progress || 0);
+  const progress = Math.round(job?.progress || 0);
   return (
     <article className="video-card">
       <button
@@ -183,7 +172,7 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
               <span>{progress}%</span>
             </div>
             <progress aria-label="Tiến độ tải video" max="100" value={progress} />
-            {job.error && <p>{errorMessage(job.error)}</p>}
+            {job.error && <p>{errorMessage(job.error, job.code)}</p>}
           </div>
         )}
       </div>
