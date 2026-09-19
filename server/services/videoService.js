@@ -4,6 +4,7 @@ import { ERROR_CODES, fail } from '../utils/errors.js';
 import { classifyContentType } from '../utils/mediaFile.js';
 import { runProcess } from './processService.js';
 import { TaskQueue } from './queueService.js';
+import { resolveProvider, providerLabel } from '../providers/index.js';
 export const infoQueue = new TaskQueue(2, config.maxQueue);
 let proxyUrl;
 export function setProxy(url) {
@@ -231,9 +232,10 @@ export function normalizeInfo(raw, url) {
 export function getInfo(input) {
   return infoQueue.add(async () => {
     const url = await validateUrl(input);
-    const platform = detectPlatform(url);
+    const provider = resolveProvider(url);
+    const platform = provider.id === 'generic' ? detectPlatform(url) : provider.id;
     console.log('[INFO] URL:', url);
-    console.log('[INFO] PLATFORM:', platform);
+    console.log('[INFO] PROVIDER:', providerLabel(provider), 'PLATFORM:', platform);
     if (platform === 'youtube') {
       console.log('[YOUTUBE] Starting...');
       console.log('[YOUTUBE] URL:', url);
