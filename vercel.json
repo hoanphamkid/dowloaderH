@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "http://160.191.243.136/api/:path*" }
+    { "source": "/api/:path*", "destination": "https://dowloaderh-api.onrender.com/api/:path*" }
   ],
   "headers": [
     {
