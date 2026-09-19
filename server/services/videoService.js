@@ -23,7 +23,7 @@ export function baseArgs() {
     '--playlist-items',
     '1',
     '--no-cache-dir',
-    '--no-cookies',
+    ...(config.youtubeCookies ? ['--cookies', config.youtubeCookies] : ['--no-cookies']),
     '--no-geo-bypass',
     '--no-check-formats',
     '--socket-timeout',

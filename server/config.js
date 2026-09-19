@@ -35,6 +35,7 @@ export const config = {
   bgutilPluginDir:
     process.env.BGUTIL_PLUGIN_DIR ||
     (process.platform === 'linux' ? '/opt/bgutil-ytdlp-pot-provider/plugin' : ''),
+  youtubeCookies: process.env.YOUTUBE_COOKIES_PATH || '',
   temp: path.join(root, 'server', 'temp'),
 };
 // Relative executable paths are always rooted at the project, not the current job directory.
