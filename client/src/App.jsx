@@ -235,7 +235,7 @@ export default function App() {
         <div className="welcome-backdrop youtube-warning-backdrop" role="presentation" onMouseDown={() => setShowYoutubeWarning(false)}>
           <section className="youtube-warning" role="alertdialog" aria-modal="true" aria-labelledby="youtube-warning-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="youtube-warning-close" onClick={() => setShowYoutubeWarning(false)} aria-label="Đóng cảnh báo"><X size={15} /></button>
-            <h2 id="youtube-warning-title"><span>⚠</span> Cảnh Báo YouTube <span>⚠</span></h2>
+            <h2 id="youtube-warning-title"><span>⚠</span> Thông Báo <span>⚠</span></h2>
             <p>Video từ YouTube hiện chưa thể tải vì nền tảng đang giới hạn truy cập.</p>
             <p>Vui lòng thử lại sau hoặc sử dụng liên kết từ nền tảng khác.</p>
             <button className="primary welcome-button" onClick={() => setShowYoutubeWarning(false)}>Đã hiểu <ArrowRight size={16} /></button>
