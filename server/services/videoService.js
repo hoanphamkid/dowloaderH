@@ -12,9 +12,9 @@ export function baseArgs() {
   if (!proxyUrl) throw new AppError('Media service is not ready.', 503);
   const args = [
     '--ignore-config',
-    // Disable default/user plugin directories, then load only this reviewed,
-    // repository-bundled plugin. Never fetch plugins at runtime.
-    '--no-plugin-dirs',
+    // Load the repository extractor and the installed bgutil YouTube POT
+    // provider. The Docker image installs bgutil into yt-dlp's normal plugin
+    // directory; disabling default plugin directories breaks YouTube.
     '--plugin-dirs',
     root,
     '--no-playlist',

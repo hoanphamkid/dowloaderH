@@ -77,13 +77,11 @@ test('rejects DRM, live, restricted, overlong and unknown-duration media', () =>
     ),
   );
 });
-test('yt-dlp loads only the project-bundled extractor plugins', () => {
+test('yt-dlp loads the bundled extractor and installed YouTube provider plugins', () => {
   setProxy('http://127.0.0.1:3128');
   const args = baseArgs();
   const pluginFlag = args.indexOf('--plugin-dirs');
-  const disableDefaultsFlag = args.indexOf('--no-plugin-dirs');
   assert.notEqual(pluginFlag, -1);
-  assert.ok(disableDefaultsFlag > -1 && disableDefaultsFlag < pluginFlag);
   assert.equal(args[pluginFlag + 1], root);
 });
 test('queue limits concurrency and recovers after task errors', async () => {

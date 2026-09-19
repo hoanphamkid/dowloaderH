@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { config } from '../config.js';
-export const urlSchema = z.object({ url: z.string().trim().min(1).max(4096) }).strict();
+const cleanUrl = z.preprocess(
+  (value) =>
+    typeof value === 'string'
+      ? value.trim().replace(/^\s*[<\[\(\"']+|[>\]\)\"']+\s*$/g, '')
+      : value,
+  z.string().min(1).max(4096),
+);
+export const urlSchema = z.object({ url: cleanUrl }).strict();
 export const downloadSchema = urlSchema.extend({
   formatId: z
     .string()
