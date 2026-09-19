@@ -48,6 +48,7 @@ export default function App() {
     [online, setOnline] = useState(null),
     [menu, setMenu] = useState(false),
     [showNotice, setShowNotice] = useState(true),
+    [showYoutubeWarning, setShowYoutubeWarning] = useState(false),
     [donations, setDonations] = useState([]);
   const { history, add, clear } = useHistory();
   const stops = useRef(new Map()),
@@ -218,11 +219,23 @@ export default function App() {
       {showNotice && (
         <div className="welcome-backdrop" role="presentation" onMouseDown={() => setShowNotice(false)}>
           <section className="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onMouseDown={(event) => event.stopPropagation()}>
-            <button className="welcome-close" onClick={() => setShowNotice(false)} aria-label="Đóng thông báo"><X size={18} /></button>
+            <button className="welcome-close" onClick={() => { setShowNotice(false); setShowYoutubeWarning(true); }} aria-label="Đóng thông báo"><X size={18} /></button>
             <h2 id="welcome-title"><span>⚡</span> Thông Báo <span>⚡</span></h2>
             <p className="welcome-intro">Xin chào mình là Hoàn Phạm,<br />mình là sinh viên IT nhưng mình không biết code,<br />mình chỉ biết <strong>vibe code :)))</strong></p>
             <p className="welcome-note">Mình đang học hỏi mỗi ngày và tự làm công cụ nhỏ này để mọi người tải video dễ dàng hơn.</p>
             <button className="primary welcome-button" onClick={() => setShowNotice(false)}>Đã hiểu <ArrowRight size={16} /></button>
+          </section>
+        </div>
+      )}
+      {showYoutubeWarning && (
+        <div className="youtube-warning-backdrop" role="presentation" onMouseDown={() => setShowYoutubeWarning(false)}>
+          <section className="youtube-warning" role="alertdialog" aria-modal="true" aria-labelledby="youtube-warning-title" onMouseDown={(event) => event.stopPropagation()}>
+            <button className="youtube-warning-close" onClick={() => setShowYoutubeWarning(false)} aria-label="Đóng cảnh báo"><X size={15} /></button>
+            <div className="youtube-warning-icon">!</div>
+            <div>
+              <h2 id="youtube-warning-title">Lưu ý khi tải YouTube</h2>
+              <p>Video từ YouTube hiện chưa thể tải ổn định do nền tảng đang giới hạn truy cập. Bạn có thể thử lại sau hoặc sử dụng liên kết từ nền tảng khác.</p>
+            </div>
           </section>
         </div>
       )}
