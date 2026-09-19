@@ -39,6 +39,9 @@ export function baseArgs() {
     '--ffmpeg-location',
     config.ffmpeg,
   ];
+  // YouTube is rate-limiting the normal webpage client on Render. The mweb
+  // client is the recommended yt-dlp path when paired with a PO-token provider.
+  args.splice(args.indexOf('--ffmpeg-location'), 0, '--extractor-args', 'youtube:player-client=mweb');
   if (config.bgutilServerHome)
     args.splice(
       args.indexOf('--ffmpeg-location'),
