@@ -28,7 +28,7 @@ const MESSAGES = {
   [ERROR_CODES.UPSTREAM_ERROR]: 'Máy chủ video gặp lỗi. Vui lòng thử lại sau.',
   [ERROR_CODES.DOWNLOAD_ABORTED]: 'Lượt tải đã bị hủy.',
   [ERROR_CODES.YOUTUBE_DOWNLOAD_UNAVAILABLE]:
-    'Nền tảng không cung cấp media để tải bằng phương thức hiện tại.',
+    'Video YouTube này không thể được xử lý bằng phương thức hiện tại.',
   [ERROR_CODES.SERVER_ERROR]: 'Đã xảy ra lỗi máy chủ. Vui lòng thử lại.',
 };
 
@@ -63,10 +63,33 @@ export function errorBody(error) {
 
 export function processError(text = '') {
   const message = String(text);
+  if (/not enough space on the disk|ENOSPC|no space left/i.test(message))
+    return fail(
+      ERROR_CODES.SERVER_ERROR,
+      503,
+      'Temporary disk space is exhausted. The media processor cannot start.',
+    );
+  if (/failed to extract|failed to load python|could not load python/i.test(message))
+    return fail(ERROR_CODES.SERVER_ERROR, 503, 'The media processor could not unpack or load its runtime.');
+  // Transport failures must take precedence over warnings mentioning cookies,
+  // tokens or FFmpeg elsewhere in the same stderr output.
+  if (/timed? out|timeout/i.test(message)) return fail(ERROR_CODES.DOWNLOAD_TIMEOUT, 504);
+  if (/HTTP Error 429|Too Many Requests/i.test(message))
+    return fail(ERROR_CODES.UPSTREAM_ERROR, 429, 'The video platform is rate limiting this server.');
+  if (/HTTP Error 403|403 Forbidden/i.test(message))
+    return fail(ERROR_CODES.ACCESS_DENIED, 403, 'The video platform denied access from this server.');
   if (/DRM/i.test(message))
     return fail(ERROR_CODES.ACCESS_DENIED, 403, 'Video có bảo vệ DRM nên không hỗ trợ tải xuống.');
-  if (/sign in to confirm|not a bot|bot check|po token|please sign in/i.test(message))
-    return fail(ERROR_CODES.YOUTUBE_DOWNLOAD_UNAVAILABLE, 502);
+  if (
+    /sign in to confirm|not a bot|bot check|po token|please sign in|only images are available|requested format is not available/i.test(
+      message,
+    )
+  )
+    return fail(
+      ERROR_CODES.YOUTUBE_DOWNLOAD_UNAVAILABLE,
+      502,
+      'Video YouTube này không thể được xử lý bằng phương thức hiện tại.',
+    );
   if (
     /private video|video is private|members.only|authentication|cookies|confirm your age|age.restrict/i.test(
       message,
@@ -87,5 +110,11 @@ export function processError(text = '') {
       'Không thể xử lý video này. Vui lòng chọn định dạng khác.',
     );
   if (/timed? out|timeout/i.test(message)) return fail(ERROR_CODES.DOWNLOAD_TIMEOUT, 504);
+  if (/\[youtube\]/i.test(message))
+    return fail(
+      ERROR_CODES.YOUTUBE_DOWNLOAD_UNAVAILABLE,
+      502,
+      'Video YouTube này không thể được xử lý bằng phương thức hiện tại.',
+    );
   return fail(ERROR_CODES.UPSTREAM_ERROR, 502);
 }

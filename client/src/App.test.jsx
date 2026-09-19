@@ -155,10 +155,8 @@ describe('downloader user flows', () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole('button', { name: /Nhiều liên kết/ }));
-    await user.type(
-      screen.getByRole('textbox', { name: /Các liên kết video/ }),
-      video.url + '\nhttps://example.com/missing',
-    );
+    await user.type(screen.getByRole('textbox', { name: 'Liên kết 1' }), video.url);
+    await user.type(screen.getByRole('textbox', { name: 'Liên kết 2' }), 'https://example.com/missing');
     await user.click(screen.getByRole('button', { name: 'Lấy video' }));
     await screen.findByRole('heading', { name: video.title });
     expect(screen.getByText('Video không khả dụng.')).toBeTruthy();

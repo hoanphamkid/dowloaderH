@@ -225,29 +225,51 @@ export function normalizeInfo(raw, url) {
 export function getInfo(input) {
   return infoQueue.add(async () => {
     const url = await validateUrl(input);
-    const stdout = await runProcess(
-      config.yt,
-      [...baseArgs(), '--skip-download', '--dump-single-json', '--', url],
-      { timeout: config.infoTimeout },
-    );
-    let raw;
-    try {
-      raw = JSON.parse(stdout);
-    } catch {
-      const start = stdout.indexOf('{');
-      const end = stdout.lastIndexOf('}');
-      try {
-        if (start === -1 || end <= start) throw new SyntaxError('empty');
-        raw = JSON.parse(stdout.slice(start, end + 1));
-      } catch {
-        throw fail(
-          ERROR_CODES.UPSTREAM_ERROR,
-          502,
-          'The platform returned invalid media information.',
-        );
-      }
+    const platform = detectPlatform(url);
+    console.log('[INFO] URL:', url);
+    console.log('[INFO] PLATFORM:', platform);
+    if (platform === 'youtube') {
+      console.log('[YOUTUBE] Starting...');
+      console.log('[YOUTUBE] URL:', url);
     }
-    return normalizeInfo(raw, url);
+    try {
+      const stdout = await runProcess(
+        config.yt,
+        [...baseArgs(), '--skip-download', '--dump-single-json', '--', url],
+        { timeout: config.infoTimeout },
+      );
+      let raw;
+      try {
+        raw = JSON.parse(stdout);
+      } catch {
+        const start = stdout.indexOf('{');
+        const end = stdout.lastIndexOf('}');
+        try {
+          if (start === -1 || end <= start) throw new SyntaxError('empty');
+          raw = JSON.parse(stdout.slice(start, end + 1));
+        } catch {
+          console.error('[INFO PARSE ERROR] stdout bytes=', stdout.length);
+          throw fail(
+            ERROR_CODES.UPSTREAM_ERROR,
+            502,
+            'The platform returned invalid media information.',
+          );
+        }
+      }
+      const info = normalizeInfo(raw, url);
+      console.log('[INFO] TITLE:', info.title, 'FORMATS:', info.formats.length);
+      return info;
+    } catch (error) {
+      if (platform === 'youtube') {
+        console.error('[YOUTUBE ERROR]', error);
+        console.error('[YOUTUBE ERROR MESSAGE]', error?.message);
+        console.error('[YOUTUBE ERROR STACK]', error?.stack);
+        console.error('[YOUTUBE ERROR CAUSE]', error?.cause?.message || error?.cause || '');
+      } else {
+        console.error('[INFO ERROR]', error?.message, error?.cause?.message || '');
+      }
+      throw error;
+    }
   });
 }
 export function publicInfo(info) {

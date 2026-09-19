@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process';
+import fs from 'node:fs';
+import { config } from '../config.js';
 import { AppError, ERROR_CODES, fail, processError } from '../utils/errors.js';
 export const children = new Set();
 export function killTree(child) {
@@ -23,12 +25,22 @@ export function runProcess(
   { timeout = 30000, onLine, cwd, maxOutput = 16 * 1024 * 1024, shouldAbort } = {},
 ) {
   return new Promise((resolve, reject) => {
+    fs.mkdirSync(config.temp, { recursive: true });
     const child = spawn(command, args, {
       shell: false,
       windowsHide: true,
       detached: process.platform !== 'win32',
       cwd,
-      env: { ...process.env, NO_PROXY: '', no_proxy: '' },
+      env: {
+        ...process.env,
+        NO_PROXY: '',
+        no_proxy: '',
+        // yt-dlp.exe (PyInstaller) unpacks to TEMP. Keep it on the project disk;
+        // a full system drive (often C:) makes extraction fail before YouTube runs.
+        TEMP: config.temp,
+        TMP: config.temp,
+        TMPDIR: config.temp,
+      },
     });
     children.add(child);
     let stdout = '',
@@ -68,6 +80,7 @@ export function runProcess(
       clearTimeout(timer);
       clearInterval(abortTimer);
       children.delete(child);
+      console.error('[PROCESS SPAWN ERROR]', command, error.code, error.message);
       reject(
         fail(
           ERROR_CODES.SERVER_ERROR,
@@ -85,6 +98,8 @@ export function runProcess(
       if (buffer) onLine?.(buffer);
       if (failure) reject(failure);
       else if (code !== 0) {
+        console.error('[PROCESS EXIT]', command, 'code=', code);
+        console.error('[PROCESS STDERR]', stderr.slice(-4000));
         const error = processError(stderr);
         error.cause = new Error(stderr);
         reject(error);

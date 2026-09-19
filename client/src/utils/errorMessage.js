@@ -30,7 +30,7 @@ const byCode = new Map([
   ['DOWNLOAD_TIMEOUT', 'Kết nối tới máy chủ video bị timeout. Vui lòng thử lại.'],
   ['UPSTREAM_ERROR', 'Máy chủ video gặp lỗi. Vui lòng thử lại sau.'],
   ['DOWNLOAD_ABORTED', 'Lượt tải đã bị hủy.'],
-  ['YOUTUBE_DOWNLOAD_UNAVAILABLE', 'Nền tảng không cung cấp media để tải bằng phương thức hiện tại.'],
+  ['YOUTUBE_DOWNLOAD_UNAVAILABLE', 'Video YouTube này không thể được xử lý bằng phương thức hiện tại.'],
   ['SERVER_ERROR', 'Đã xảy ra lỗi máy chủ. Vui lòng thử lại.'],
 ]);
 
