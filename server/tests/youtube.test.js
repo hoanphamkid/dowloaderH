@@ -77,6 +77,7 @@ test('maps yt-dlp YouTube and disk failures to distinct codes', () => {
   assert.equal(processError('WARNING: ffmpeg unavailable\nERROR: [youtube] connection timed out').status, 504);
   assert.equal(processError('ERROR: [youtube] HTTP Error 429: Too Many Requests').status, 429);
   assert.equal(processError('Failed to extract python310.dll').message.includes('exhausted'), false);
+  assert.notEqual(processError('ERROR: [youtube] Failed to extract player response').code, ERROR_CODES.SERVER_ERROR);
   assert.equal(
     processError('ERROR: [youtube] abc: Sign in to confirm you’re not a bot').code,
     ERROR_CODES.YOUTUBE_DOWNLOAD_UNAVAILABLE,

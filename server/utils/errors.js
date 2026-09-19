@@ -69,7 +69,7 @@ export function processError(text = '') {
       503,
       'Temporary disk space is exhausted. The media processor cannot start.',
     );
-  if (/failed to extract|failed to load python|could not load python/i.test(message))
+  if (/failed to extract[^\r\n]*\.(dll|pyd)\b|failed to load python|could not load python/i.test(message))
     return fail(ERROR_CODES.SERVER_ERROR, 503, 'The media processor could not unpack or load its runtime.');
   // Transport failures must take precedence over warnings mentioning cookies,
   // tokens or FFmpeg elsewhere in the same stderr output.
