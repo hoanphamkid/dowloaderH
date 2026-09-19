@@ -10,7 +10,7 @@ COPY client/package*.json client/
 COPY server/package*.json server/
 RUN npm install
 COPY . .
-ENV NODE_ENV=production HOST=0.0.0.0 DONATIONS_FILE=/data/donations.json
+ENV NODE_ENV=production HOST=0.0.0.0 DONATIONS_FILE=/app/server/donations.json
 RUN npm run build -w client
 EXPOSE 10000
 CMD ["npm", "start"]
