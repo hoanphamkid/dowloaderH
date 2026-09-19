@@ -36,6 +36,9 @@ export const config = {
     process.env.BGUTIL_PLUGIN_DIR ||
     (process.platform === 'linux' ? '/opt/bgutil-ytdlp-pot-provider/plugin' : ''),
   youtubeCookies: process.env.YOUTUBE_COOKIES_PATH || '',
+  // Opt-in support for public, age-restricted X posts. This does not grant
+  // access to private posts; yt-dlp still enforces the account/session access.
+  allowAgeRestrictedX: process.env.ALLOW_AGE_RESTRICTED_X === 'true',
   temp: path.join(root, 'server', 'temp'),
 };
 // Relative executable paths are always rooted at the project, not the current job directory.

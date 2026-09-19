@@ -89,15 +89,19 @@ function addYoutubeFallback(options, audioSource) {
 }
 
 export function normalizeInfo(raw, url) {
+  const platform = detectPlatform(url);
   if (raw._type === 'playlist' || raw.entries)
     throw fail(ERROR_CODES.UNSUPPORTED_PLATFORM, 400, 'Please paste a single video URL, not a playlist.');
   if (raw.is_live || raw.live_status === 'is_live' || raw.live_status === 'is_upcoming')
     throw fail(ERROR_CODES.VIDEO_UNAVAILABLE, 400, 'Live and upcoming streams are not supported.');
   if (raw.has_drm)
     throw fail(ERROR_CODES.ACCESS_DENIED, 403, 'This video is DRM protected. Downloading is not supported.');
+  const ageRestrictedX = platform === 'twitter' && config.allowAgeRestrictedX && raw.age_limit >= 18;
+  const availability = String(raw.availability || '').toLowerCase();
   if (
-    raw.age_limit >= 18 ||
-    (raw.availability && !['public', 'unlisted'].includes(raw.availability))
+    (raw.age_limit >= 18 && !ageRestrictedX) ||
+    (availability && !['public', 'unlisted', 'age_restricted'].includes(availability)) ||
+    (availability === 'age_restricted' && !ageRestrictedX)
   )
     throw fail(
       raw.availability === 'private' ? ERROR_CODES.VIDEO_PRIVATE : ERROR_CODES.ACCESS_DENIED,
@@ -106,7 +110,6 @@ export function normalizeInfo(raw, url) {
         ? 'This video is private.'
         : 'This video is unavailable or requires permission to access.',
     );
-  const platform = detectPlatform(url);
   const headerType = classifyContentType(
     raw.http_headers?.['Content-Type'] || raw.http_headers?.['content-type'] || '',
   );

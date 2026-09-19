@@ -77,6 +77,19 @@ test('rejects DRM, live, restricted, overlong and unknown-duration media', () =>
     ),
   );
 });
+test('allows an explicitly enabled public age-restricted X post', () => {
+  const previous = config.allowAgeRestrictedX;
+  config.allowAgeRestrictedX = true;
+  try {
+    const info = normalizeInfo(
+      { ...raw, age_limit: 18, availability: 'age_restricted' },
+      'https://x.com/example/status/123',
+    );
+    assert.equal(info.platform, 'twitter');
+  } finally {
+    config.allowAgeRestrictedX = previous;
+  }
+});
 test('yt-dlp loads the bundled extractor and installed YouTube provider plugins', () => {
   setProxy('http://127.0.0.1:3128');
   const args = baseArgs();
