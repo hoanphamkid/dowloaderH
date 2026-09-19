@@ -20,6 +20,7 @@ import { api, monitorJob, monitorDelivery, API_URL } from './services/api.js';
 import { useHistory } from './hooks/useHistory.js';
 import PlatformIcon, { platforms } from './components/PlatformIcon.jsx';
 import VideoCard from './components/VideoCard.jsx';
+import BatchLinks from './components/BatchLinks.jsx';
 import History from './pages/History.jsx';
 import InteractiveBackground from './components/InteractiveBackground.jsx';
 import { detectPlatformFromUrl, platformLabel } from './utils/platform.js';
@@ -340,19 +341,12 @@ export default function App() {
                         spellCheck="false"
                       />
                     ) : (
-                      <textarea
-                        id="video-url"
-                        placeholder={`Dán tối đa ${maxBatch} liên kết, mỗi dòng một liên kết…`}
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        rows={4}
-                        aria-invalid={Boolean(error)}
-                        aria-describedby={error ? 'link-error' : undefined}
-                      />
+                      <BatchLinks value={url} onChange={setUrl} limit={maxBatch} disabled={loading || active} />
                     )}
                     <button
                       type="button"
                       className="paste"
+                      hidden={mode === 'batch'}
                       onClick={paste}
                       aria-label="Dán liên kết từ bộ nhớ tạm"
                     >
