@@ -23,7 +23,6 @@ export const config = {
   timeout: number('PROCESS_TIMEOUT_SECONDS', 900) * 1000,
   infoTimeout: number('INFO_TIMEOUT_SECONDS', 90) * 1000,
   profileTimeout: number('PROFILE_TIMEOUT_SECONDS', 30, 5, 120) * 1000,
-  profileItems: number('PROFILE_ITEMS', 8, 1, 20),
   infoLimit: number('INFO_RATE_LIMIT', 30),
   profileLimit: number('PROFILE_RATE_LIMIT', 20),
   downloadLimit: number('DOWNLOAD_RATE_LIMIT', 10),
