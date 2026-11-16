@@ -15,6 +15,7 @@ import {
   Lock,
   MessageCircle,
   Music2,
+  Play,
   Scissors,
   Search,
   ShieldCheck,
@@ -96,6 +97,53 @@ function Stat({ icon: Icon, label, value, className }) {
   );
 }
 
+function videoMetric(value) {
+  return formatNumber(value);
+}
+
+function videoDate(value) {
+  const timestamp = Number(value);
+  if (!Number.isFinite(timestamp) || timestamp <= 0) return 'Không có ngày';
+  return new Intl.DateTimeFormat('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    dateStyle: 'medium',
+  }).format(new Date(timestamp * 1000));
+}
+
+function VideoCard({ item }) {
+  if (!item) return null;
+  return (
+    <article className="profile-video-card">
+      <a className="profile-video-thumb" href={item.url || '#'} target="_blank" rel="noreferrer">
+        {item.thumbnail ? <img src={item.thumbnail} alt={item.title} loading="lazy" /> : <Play size={24} />}
+        <span><Play size={14} /> Xem</span>
+      </a>
+      <div className="profile-video-copy">
+        <h4>{item.title}</h4>
+        <p>@{item.author?.username || 'unknown'} · {videoDate(item.createdAt)}</p>
+        <div className="profile-video-metrics">
+          <span>♥ {videoMetric(item.stats?.likes)}</span>
+          <span>▣ {videoMetric(item.stats?.comments)}</span>
+          <span>↗ {videoMetric(item.stats?.shares)}</span>
+        </div>
+        {item.url && <a className="profile-video-link" href={item.url} target="_blank" rel="noreferrer">Mở video TikTok <ArrowUpRight size={13} /></a>}
+      </div>
+    </article>
+  );
+}
+
+function VideoCollection({ title, items, empty, featured = false }) {
+  return (
+    <section className={`profile-video-section ${featured ? 'is-featured' : ''}`}>
+      <div className="profile-video-heading">
+        <h3>{title}</h3>
+        {items?.length > 0 && <span>{items.length} video</span>}
+      </div>
+      {items?.length ? <div className="profile-video-grid">{items.map((item) => <VideoCard key={item.id} item={item} />)}</div> : <p className="profile-content-empty">{empty}</p>}
+    </section>
+  );
+}
+
 export default function ProfileLookup() {
   const [input, setInput] = useState('');
   const [profile, setProfile] = useState(null);
@@ -133,6 +181,7 @@ export default function ProfileLookup() {
 
   const user = profile?.user;
   const stats = profile?.stats;
+  const content = profile?.content || {};
   const settings = user?.settings || {};
   const tabs = user?.tabs || {};
 
@@ -200,6 +249,24 @@ export default function ProfileLookup() {
             <Stat icon={Heart} label="Lượt thích" value={stats.likes} className="red" />
             <Stat icon={Video} label="Video" value={stats.videos} className="yellow" />
             <Stat icon={UserRound} label="Bạn bè" value={stats.friends} className="violet" />
+          </div>
+          <div className="profile-content">
+            <VideoCollection
+              title="Video đã đăng"
+              items={content.videos || []}
+              empty="Chưa lấy được danh sách video công khai của tài khoản này."
+            />
+            <VideoCollection
+              title="Bài đăng lại"
+              items={content.reposts || []}
+              empty={content.repostsPublic ? 'Tài khoản chưa có bài đăng lại hoặc TikTok không trả dữ liệu.' : 'Tài khoản chưa công khai tab bài đăng lại.'}
+            />
+            <VideoCollection
+              title="Video đầu tiên trong danh sách đã thích"
+              items={content.likedFirst ? [content.likedFirst] : []}
+              featured
+              empty={content.likesPublic ? 'Tài khoản chưa có video đã thích hoặc TikTok không trả dữ liệu.' : 'Tài khoản đang ẩn danh sách video đã thích.'}
+            />
           </div>
           <div className="profile-groups">
             <div className="profile-group-heading">

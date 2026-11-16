@@ -1,5 +1,7 @@
 import { config } from '../config.js';
 import { ERROR_CODES, fail } from '../utils/errors.js';
+import { runProcess } from './processService.js';
+import { baseArgs } from './videoService.js';
 
 function profileUrl(input) {
   const value = String(input || '').trim();
@@ -75,6 +77,168 @@ function cleanProfile(user = {}, stats = {}) {
   };
 }
 
+function parseJsonOutput(stdout) {
+  try {
+    return JSON.parse(stdout);
+  } catch {
+    const start = stdout.indexOf('{');
+    const end = stdout.lastIndexOf('}');
+    if (start === -1 || end <= start) return null;
+    try {
+      return JSON.parse(stdout.slice(start, end + 1));
+    } catch {
+      return null;
+    }
+  }
+}
+
+function safeThumbnail(value) {
+  if (Array.isArray(value)) return safeThumbnail(value[0]);
+  if (value && typeof value === 'object') return safeThumbnail(value.url || value.src);
+  return httpsUrl(value);
+}
+
+function normalizeVideo(raw = {}) {
+  const item = raw.itemStruct || raw;
+  const author = item.author || {};
+  const video = item.video || {};
+  const stats = item.stats || {};
+  const id = String(item.id || item.itemId || '').trim();
+  const username = String(author.uniqueId || item.uploader || '').trim();
+  if (!id) return null;
+  return {
+    id,
+    title: item.desc || item.title || 'TikTok video',
+    url:
+      item.shareUrl ||
+      item.webVideoUrl ||
+      (username ? `https://www.tiktok.com/@${encodeURIComponent(username)}/video/${id}` : null),
+    thumbnail: safeThumbnail(
+      video.cover || video.originCover || video.dynamicCover || item.thumbnail || item.thumbnails,
+    ),
+    duration: Number(video.duration || item.duration || 0) || null,
+    createdAt: item.createTime || item.timestamp || null,
+    author: {
+      username: username || null,
+      nickname: author.nickname || item.author || null,
+      avatar: safeThumbnail(author.avatarLarger || author.avatarMedium || author.avatarThumb),
+    },
+    stats: {
+      views: stats.playCount ?? item.view_count ?? 0,
+      likes: stats.diggCount ?? item.like_count ?? 0,
+      comments: stats.commentCount ?? item.comment_count ?? 0,
+      shares: stats.shareCount ?? item.repost_count ?? 0,
+    },
+  };
+}
+
+function profilePlaylistArgs() {
+  const source = baseArgs();
+  const args = [];
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] === '--no-playlist') continue;
+    if (source[index] === '--playlist-items') {
+      index += 1;
+      continue;
+    }
+    args.push(source[index]);
+  }
+  return [
+    ...args,
+    '--flat-playlist',
+    '--playlist-end',
+    String(config.profileItems),
+    '--skip-download',
+    '--dump-single-json',
+  ];
+}
+
+async function getPublishedVideos(target) {
+  try {
+    const stdout = await runProcess(
+      config.yt,
+      [...profilePlaylistArgs(), '--', target],
+      { timeout: config.profileTimeout, maxOutput: 8 * 1024 * 1024 },
+    );
+    const payload = parseJsonOutput(stdout);
+    return (payload?.entries || []).map(normalizeVideo).filter(Boolean);
+  } catch (error) {
+    console.warn('[PROFILE VIDEOS]', error?.message || error);
+    return [];
+  }
+}
+
+function tiktokListUrl(kind, secUid, username) {
+  const endpoint = new URL(`https://www.tiktok.com/api/${kind}/item_list/`);
+  const params = {
+    secUid,
+    count: '30',
+    cursor: '0',
+    aid: '1988',
+    app_name: 'tiktok_web',
+    device_platform: 'web_pc',
+    from_page: 'user',
+    browser_language: 'en-US',
+    browser_name: 'Mozilla',
+    browser_version: '5.0',
+    browser_platform: 'Win32',
+    browser_online: 'true',
+    cookie_enabled: 'true',
+    language: 'en',
+    region: 'US',
+    priority_region: 'US',
+    screen_height: '900',
+    screen_width: '1440',
+    tz_name: 'Asia/Ho_Chi_Minh',
+    user_is_login: 'false',
+    webcast_language: 'en',
+    history_len: '2',
+    is_page_visible: 'true',
+    focus_state: 'true',
+    is_fullscreen: 'false',
+    data_collection_enabled: 'false',
+  };
+  Object.entries(params).forEach(([key, value]) => endpoint.searchParams.set(key, value));
+  return { endpoint, referer: `https://www.tiktok.com/@${encodeURIComponent(username)}` };
+}
+
+async function getTikTokCollection(kind, secUid, username) {
+  if (!secUid) return [];
+  try {
+    const { endpoint, referer } = tiktokListUrl(kind, secUid, username);
+    const response = await fetch(endpoint, {
+      headers: {
+        accept: 'application/json, text/plain, */*',
+        referer,
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131 Safari/537.36',
+      },
+      signal: AbortSignal.timeout(config.profileTimeout),
+    });
+    const text = await response.text();
+    if (!response.ok || !text.trim()) return [];
+    const payload = JSON.parse(text);
+    return (payload.itemList || []).map(normalizeVideo).filter(Boolean);
+  } catch (error) {
+    console.warn(`[PROFILE ${kind}]`, error?.message || error);
+    return [];
+  }
+}
+
+async function getProfileContent(target, user) {
+  const username = user.uniqueId || user.id || '';
+  const tasks = [getPublishedVideos(target)];
+  tasks.push(user.profileTab?.showRepostTab ? getTikTokCollection('repost', user.secUid, username) : Promise.resolve([]));
+  tasks.push(user.openFavorite ? getTikTokCollection('favorite', user.secUid, username) : Promise.resolve([]));
+  const [videos, reposts, liked] = await Promise.all(tasks);
+  return {
+    videos,
+    reposts,
+    likedFirst: liked[0] || null,
+    repostsPublic: Boolean(user.profileTab?.showRepostTab),
+    likesPublic: Boolean(user.openFavorite),
+  };
+}
+
 export async function getProfile(input) {
   const target = profileUrl(input);
   const endpoint = new URL(config.tiktokProfileApi);
@@ -96,7 +260,8 @@ export async function getProfile(input) {
       );
     const profile = cleanProfile(userInfo.user, userInfo.statsV2 || userInfo.stats || {});
     if (!profile.user.username) throw fail(ERROR_CODES.PROFILE_NOT_FOUND, 404);
-    return { ...profile, input, sourceUrl: target };
+    const content = await getProfileContent(target, userInfo.user);
+    return { ...profile, content, input, sourceUrl: target };
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError')
       throw fail(ERROR_CODES.DOWNLOAD_TIMEOUT, 504, 'Tra cá»©u tÃ i khoáº£n quÃ¡ lÃ¢u. Vui lÃ²ng thá»­ láº¡i.');
