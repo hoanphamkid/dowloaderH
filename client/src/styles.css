@@ -740,6 +740,7 @@ footer button {
 .donate-section-copy span { color: #c9b8db; font-size: 13px; }
 .donate-section-qr { width: 180px; height: 180px; object-fit: cover; border-radius: 10px; background: #fff; }
 .donate-section { display: block; margin: 42px auto 30px; width: min(1020px, 92%); padding: 28px 32px 34px; background: linear-gradient(135deg, #1c1528, #120f19); color: #f4eefc; border: 1px solid #3d3152; border-radius: 18px; }
+.donate-section { display: none !important; }
 .donate-heading { text-align: center; max-width: 620px; margin: 0 auto 22px; }
 .donate-heading h2 { margin: 0 0 8px; font-size: 30px; color: #f4eefc; }
 .donate-heading p { margin: 0; color: #ff7417; line-height: 1.5; }
