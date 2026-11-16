@@ -27,6 +27,7 @@ beforeEach(() => {
   localStorage.clear();
   vi.clearAllMocks();
   window.scrollTo = vi.fn();
+  vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ json: async () => ({ online: 1 }) }));
   api.mockImplementation(async (path) => {
     if (path === '/health') return { limits: { maxBatch: 10 } };
@@ -103,7 +104,7 @@ describe('downloader user flows', () => {
     expect(screen.getAllByRole('button', { name: 'Đang tải…' }).every((button) => button.disabled)).toBe(true);
     expect(screen.getByText('Đang tải video. Tiến độ hiển thị bên dưới.')).toBeTruthy();
   });
-  it('offers a native download link and records history only after confirmed delivery', async () => {
+  it('starts the native download automatically and records history after delivery', async () => {
     const user = userEvent.setup();
     const binaryFetch = vi.fn().mockResolvedValue({ json: async () => ({ online: 1 }) });
     const createBlob = vi.fn();
@@ -114,15 +115,17 @@ describe('downloader user flows', () => {
     await user.click(screen.getByRole('button', { name: 'Tải xuống', exact: true }));
     await waitFor(() => expect(monitorJob).toHaveBeenCalled());
     await act(async () => progressCallback({ id: 'job-123', state: 'completed', progress: 100, filename: 'my-video.mp4' }));
-    const saveLink = screen.getByRole('link', { name: 'Lưu tệp' });
+    const saveLink = HTMLAnchorElement.prototype.click.mock.instances[0];
     expect(saveLink.getAttribute('href')).toBe('/api/download/job-123/file');
     expect(saveLink.getAttribute('download')).toBe('my-video.mp4');
-    expect(monitorDelivery).not.toHaveBeenCalled();
-    expect(localStorage.getItem('social-video-history-v1')).toBeNull();
-    // JSDOM cannot perform a native download; suppress its navigation only in this test.
-    saveLink.addEventListener('click', (event) => event.preventDefault());
-    await user.click(saveLink);
     expect(monitorDelivery).toHaveBeenCalledWith('job-123', expect.any(Function));
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('link', { name: 'Lưu tệp' })).toBeNull();
+    expect(screen.getAllByRole('button', { name: 'Đang tải…' }).every((button) => button.disabled)).toBe(true);
+    await act(async () => progressCallback({ id: 'job-123', state: 'completed', progress: 100 }));
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledOnce();
+    expect(screen.getAllByRole('button', { name: 'Đang tải…' }).every((button) => button.disabled)).toBe(true);
+    expect(localStorage.getItem('social-video-history-v1')).toBeNull();
     expect(binaryFetch.mock.calls.every(([url]) => url.endsWith('/api/visitors/heartbeat'))).toBe(true);
     expect(createBlob).not.toHaveBeenCalled();
     expect(localStorage.getItem('social-video-history-v1')).toBeNull();
@@ -139,17 +142,15 @@ describe('downloader user flows', () => {
     await analyze(user);
     await user.click(screen.getByRole('button', { name: 'Tải xuống', exact: true }));
     await act(async () => progressCallback({ id: 'job-123', state: 'completed', progress: 100 }));
-    const saveLink = screen.getByRole('link', { name: 'Lưu tệp' });
-    saveLink.addEventListener('click', (event) => event.preventDefault());
-    await user.click(saveLink);
     await act(async () => deliveryCallback({ id: 'job-123', state: 'completed', progress: 100, error: 'The transfer was interrupted. Click Save file to try again.' }));
-    const retryLink = screen.getByRole('link', { name: 'Lưu tệp' });
-    expect(retryLink.getAttribute('href')).toBe('/api/download/job-123/file');
+    const retryButton = screen.getByRole('button', { name: 'Tải lại' });
     expect(screen.getByText(/Quá trình lưu bị gián đoạn/)).toBeTruthy();
     expect(localStorage.getItem('social-video-history-v1')).toBeNull();
-    retryLink.addEventListener('click', (event) => event.preventDefault());
-    await user.click(retryLink);
+    await user.click(retryButton);
     expect(monitorDelivery).toHaveBeenCalledTimes(2);
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledTimes(2);
+    expect(HTMLAnchorElement.prototype.click.mock.instances[1].getAttribute('href')).toBe('/api/download/job-123/file');
+    expect(api.mock.calls.filter(([path]) => path === '/video/download')).toHaveLength(1);
   });
   it('shows independent results and errors in batch mode', async () => {
     const user = userEvent.setup();

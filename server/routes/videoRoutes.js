@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { config } from '../config.js';
-import { validate, urlSchema, downloadSchema, batchSchema } from '../middleware/validation.js';
+import { validate, urlSchema, downloadSchema, batchSchema, profileSchema } from '../middleware/validation.js';
 import * as controller from '../controllers/videoController.js';
 const router = Router();
 const limiter = (limit) =>
@@ -13,8 +13,10 @@ const limiter = (limit) =>
     message: { error: 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng chờ một lát rồi thử lại.' },
   });
 const infoLimit = limiter(config.infoLimit);
+const profileLimit = limiter(config.profileLimit);
 const downloadLimit = limiter(config.downloadLimit);
 router.post('/video/info', infoLimit, validate(urlSchema), controller.info);
+router.post('/profile/info', profileLimit, validate(profileSchema), controller.profile);
 router.post(
   '/batch/info',
   limiter(Math.max(1, Math.floor(config.infoLimit / config.maxBatch))),

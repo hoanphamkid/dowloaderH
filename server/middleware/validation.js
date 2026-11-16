@@ -19,6 +19,16 @@ export const downloadSchema = urlSchema.extend({
 export const batchSchema = z
   .object({ urls: z.array(z.string().trim().min(1).max(4096)).min(1).max(config.maxBatch) })
   .strict();
+export const profileSchema = z
+  .object({
+    input: z
+      .preprocess((value) => (typeof value === 'string' ? value.trim() : value), z.string().min(1).max(256))
+      .refine(
+        (value) => /^(?:@?[A-Za-z0-9._-]{1,64}|https?:\/\/[^\s]+)$/i.test(value),
+        'Enter a TikTok username, ID or profile URL.',
+      ),
+  })
+  .strict();
 export function validate(schema) {
   return (req, res, next) => {
     const result = schema.safeParse(req.body);

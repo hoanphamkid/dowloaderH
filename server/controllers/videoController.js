@@ -5,6 +5,7 @@ import { AppError, ERROR_CODES, fail } from '../utils/errors.js';
 import { contentTypeForExt } from '../utils/mediaFile.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { getProfile } from '../services/profileService.js';
 export async function info(req, res) {
   res.json(publicInfo(await getInfo(req.body.url)));
 }
@@ -24,6 +25,9 @@ export async function batchInfo(req, res) {
     }
   }
   res.json({ results });
+}
+export async function profile(req, res) {
+  res.json(await getProfile(req.body.input));
 }
 export function download(req, res) {
   if (req.path.startsWith('/audio/') && req.body.type !== 'audio')

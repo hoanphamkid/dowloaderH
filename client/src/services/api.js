@@ -119,12 +119,12 @@ export function monitorDelivery(
         finish('completed', status.error);
         return;
       } else if (seenTransfer) {
-        finish('completed', 'Quá trình lưu bị gián đoạn. Nhấn Lưu tệp để thử lại.');
+        finish('completed', 'Quá trình lưu bị gián đoạn. Nhấn Tải lại để thử lại.');
         return;
       } else if (Date.now() - started >= startTimeout) {
         finish(
           'completed',
-          'Trình duyệt chưa bắt đầu tải. Nhấn Lưu tệp và kiểm tra quyền tải xuống của trình duyệt.',
+          'Trình duyệt chưa bắt đầu tải. Nhấn Tải lại và kiểm tra quyền tải xuống của trình duyệt.',
         );
         return;
       }

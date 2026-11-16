@@ -14,6 +14,7 @@ import {
   Menu,
   ShieldCheck,
   Sparkles,
+  UserRound,
   X,
 } from 'lucide-react';
 import { api, monitorJob, monitorDelivery, API_URL } from './services/api.js';
@@ -23,6 +24,7 @@ import VideoCard from './components/VideoCard.jsx';
 import BatchLinks from './components/BatchLinks.jsx';
 import History from './pages/History.jsx';
 import InteractiveBackground from './components/InteractiveBackground.jsx';
+import ProfileLookup from './components/ProfileLookup.jsx';
 import { detectPlatformFromUrl, platformLabel } from './utils/platform.js';
 import { errorMessage } from './utils/errorMessage.js';
 export default function App() {
@@ -39,6 +41,7 @@ export default function App() {
     return match?.[1]?.trim() || item.name || 'Một người bạn';
   };
   const [page, setPage] = useState('home'),
+    [tool, setTool] = useState('video'),
     [mode, setMode] = useState('single'),
     [url, setUrl] = useState(''),
     [items, setItems] = useState([]),
@@ -54,7 +57,8 @@ export default function App() {
   const stops = useRef(new Map()),
     itemsRef = useRef(items),
     addRef = useRef(add),
-    saveLocks = useRef(new Set());
+    saveLocks = useRef(new Set()),
+    downloadLocks = useRef(new Set());
   itemsRef.current = items;
   addRef.current = add;
   const detectedPlatforms = useMemo(
@@ -160,16 +164,25 @@ export default function App() {
       setLoading(false);
     }
   }
-  function save(id) {
+  function triggerNativeDownload(jobId, filename) {
+    const link = document.createElement('a');
+    link.href = `${API_URL}/api/download/${encodeURIComponent(jobId)}/file`;
+    link.download = filename || '';
+    link.hidden = true;
+    document.body.appendChild(link);
+    link.click();
+    window.setTimeout(() => link.remove(), 0);
+  }
+  function beginSave(id, job) {
     const item = itemsRef.current.find((i) => i.id === id);
-    if (!item || saveLocks.current.has(id)) return;
+    if (!item || !job?.id || saveLocks.current.has(id)) return;
     saveLocks.current.add(id);
-    const target = item.job.id;
-    patch(id, { job: { ...item.job, state: 'saving', error: null, progress: 100 } });
-    // The clicked <a download> streams the file using the browser download manager.
-    // Only small JSON status messages pass through fetch; no Blob or synthetic click.
+    const target = job.id;
+    patch(id, {
+      job: { ...job, state: 'saving', error: null, progress: 100 },
+    });
     const stop = monitorDelivery(target, (data) => {
-      patch(id, { job: { ...item.job, ...data } });
+      patch(id, { job: { ...job, ...data } });
       if (data.state === 'delivered') {
         addRef.current({
           ...item.video,
@@ -183,12 +196,18 @@ export default function App() {
       }
     });
     stops.current.set(`save-${id}`, stop);
+    triggerNativeDownload(target, job.filename);
   }
   async function download(id) {
     const item = itemsRef.current.find((i) => i.id === id);
-    if (!item) return;
+    if (!item || downloadLocks.current.has(id) || saveLocks.current.has(id)) return;
+    if (item.job?.state === 'completed') {
+      beginSave(id, item.job);
+      return;
+    }
     const format = item.video.formats.find((f) => f.id === item.selected);
     if (!format) return;
+    downloadLocks.current.add(id);
     patch(id, { job: { state: 'preparing', progress: 0 } });
     try {
       const job = await api(format.type === 'audio' ? '/audio/download' : '/video/download', {
@@ -198,14 +217,21 @@ export default function App() {
       });
       patch(id, { job });
       const stop = monitorJob(job.jobId, (data) => {
-        patch(id, { job: data });
         if (data.state === 'completed') {
+          downloadLocks.current.delete(id);
+          stops.current.delete(id);
+          beginSave(id, data);
+        } else {
+          patch(id, { job: data });
+        }
+        if (['failed', 'expired', 'delivered'].includes(data.state)) {
+          downloadLocks.current.delete(id);
           stops.current.delete(id);
         }
-        if (data.state === 'failed') stops.current.delete(id);
       });
       stops.current.set(id, stop);
     } catch (error) {
+      downloadLocks.current.delete(id);
       patch(id, { job: { state: 'failed', error: error.message, progress: 0 } });
     }
   }
@@ -314,7 +340,27 @@ export default function App() {
                 <br />
                 Nhanh chóng, đơn giản và tiện lợi.
               </p>
-              <div className="download-panel">
+              <div className="tool-tabs" role="tablist" aria-label="Công cụ">
+                <button
+                  className={tool === 'video' ? 'selected' : ''}
+                  onClick={() => setTool('video')}
+                  role="tab"
+                  aria-selected={tool === 'video'}
+                >
+                  <Link2 size={16} />
+                  Thông tin & tải video
+                </button>
+                <button
+                  className={tool === 'profile' ? 'selected' : ''}
+                  onClick={() => setTool('profile')}
+                  role="tab"
+                  aria-selected={tool === 'profile'}
+                >
+                  <UserRound size={16} />
+                  Thông tin tài khoản
+                </button>
+              </div>
+              {tool === 'video' ? <div className="download-panel">
                 <div className="panel-top">
                   <div className="mode-tabs">
                     <button
@@ -416,8 +462,8 @@ export default function App() {
                     {loading ? 'Đang lấy thông tin và chất lượng video…' : 'Đang tải video. Tiến độ hiển thị bên dưới.'}
                   </div>
                 )}
-              </div>
-              <div className="trust-row">
+              </div> : <ProfileLookup />}
+              {tool === 'video' && <div className="trust-row">
                 <span>
                   <Check size={14} />
                   Chất lượng gốc
@@ -432,9 +478,9 @@ export default function App() {
                   <Check size={14} />
                   Không quảng cáo
                 </span>
-              </div>
+              </div>}
             </section>
-            {items.length > 0 && (
+            {tool === 'video' && items.length > 0 && (
               <section className="results">
                 <div className="section-top">
                   <div>
@@ -465,7 +511,6 @@ export default function App() {
                     item={item}
                     onSelect={(id, selected) => patch(id, { selected, job: undefined })}
                     onDownload={download}
-                    onSave={save}
                   />
                 ))}
               </section>

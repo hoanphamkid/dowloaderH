@@ -11,10 +11,12 @@ export const ERROR_CODES = {
   UPSTREAM_ERROR: 'UPSTREAM_ERROR',
   DOWNLOAD_ABORTED: 'DOWNLOAD_ABORTED',
   YOUTUBE_DOWNLOAD_UNAVAILABLE: 'YOUTUBE_DOWNLOAD_UNAVAILABLE',
+  PROFILE_NOT_FOUND: 'PROFILE_NOT_FOUND',
   SERVER_ERROR: 'SERVER_ERROR',
 };
 
 const MESSAGES = {
+  [ERROR_CODES.PROFILE_NOT_FOUND]: 'Khong tim thay tai khoan TikTok hoac tai khoan khong cong khai.',
   [ERROR_CODES.INVALID_URL]: 'Liên kết chưa hợp lệ. Hãy nhập đầy đủ http:// hoặc https://.',
   [ERROR_CODES.UNSUPPORTED_PLATFORM]: 'Chưa hỗ trợ trang web hoặc liên kết này.',
   [ERROR_CODES.VIDEO_NOT_FOUND]: 'Không tìm thấy video.',

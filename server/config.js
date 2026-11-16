@@ -22,7 +22,9 @@ export const config = {
   maxBytes: number('MAX_FILE_SIZE_MB', 1024) * 1024 * 1024,
   timeout: number('PROCESS_TIMEOUT_SECONDS', 900) * 1000,
   infoTimeout: number('INFO_TIMEOUT_SECONDS', 90) * 1000,
+  profileTimeout: number('PROFILE_TIMEOUT_SECONDS', 30, 5, 120) * 1000,
   infoLimit: number('INFO_RATE_LIMIT', 30),
+  profileLimit: number('PROFILE_RATE_LIMIT', 20),
   downloadLimit: number('DOWNLOAD_RATE_LIMIT', 10),
   rateWindow: number('RATE_WINDOW_MINUTES', 10) * 60000,
   yt: process.env.YT_DLP_PATH || 'yt-dlp',
@@ -39,6 +41,8 @@ export const config = {
   // Opt-in support for public, age-restricted X posts. This does not grant
   // access to private posts; yt-dlp still enforces the account/session access.
   allowAgeRestrictedX: process.env.ALLOW_AGE_RESTRICTED_X === 'true',
+  tiktokProfileApi:
+    process.env.TIKTOK_PROFILE_API_URL || 'https://tuantuprov.eu.org/api/other/tiktok_api.php',
   temp: path.join(root, 'server', 'temp'),
 };
 // Relative executable paths are always rooted at the project, not the current job directory.

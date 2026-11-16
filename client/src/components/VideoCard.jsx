@@ -3,7 +3,6 @@ import { Download, Clock, CheckCircle2, LoaderCircle, Music2, Video, ImageOff, P
 import PlatformIcon from './PlatformIcon.jsx';
 import { duration, fileSize } from '../utils/format.js';
 import { platformLabel } from '../utils/platform.js';
-import { API_URL } from '../services/api.js';
 import { errorMessage } from '../utils/errorMessage.js';
 const labels = {
   queued: 'Đang xếp hàng',
@@ -12,14 +11,14 @@ const labels = {
   downloading: 'Đang tải…',
   merging: 'Đang ghép âm thanh…',
   processing: 'Đang xử lý…',
-  completed: 'Sẵn sàng lưu tệp',
+  completed: 'Tệp đã sẵn sàng',
   saving: 'Đang gửi tệp đến trình duyệt…',
   delivered: 'Đã tải xong',
   expired: 'Tệp đã hết hạn',
   failed: 'Tải thất bại',
   'connection-error': 'Đang kết nối lại…',
 };
-export default function VideoCard({ item, onSelect, onDownload, onSave }) {
+export default function VideoCard({ item, onSelect, onDownload }) {
   const [tab, setTab] = useState(item.video?.formats[0]?.type || 'video');
   const [imageFailed, setImageFailed] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -130,30 +129,14 @@ export default function VideoCard({ item, onSelect, onDownload, onSave }) {
               </option>
             ))}
           </select>
-          {['completed', 'saving'].includes(job?.state) ? (
-            <a
-              className="primary compact save-file-link"
-              href={`${API_URL}/api/download/${encodeURIComponent(job.id)}/file`}
-              download={job.filename || true}
-              aria-disabled={job.state === 'saving'}
-              onClick={(event) => {
-                if(job.state === 'saving') { event.preventDefault(); return; }
-                onSave(item.id);
-              }}
-            >
-              {job.state === 'saving' ? <LoaderCircle size={17} className="spin"/> : <Download size={17}/>}
-              {job.state === 'saving' ? 'Đang lưu…' : 'Lưu tệp'}
-            </a>
-          ) : (
-            <button
-              className="primary compact"
-              disabled={busy || !selected}
-              onClick={() => onDownload(item.id)}
-            >
-              {busy ? <LoaderCircle size={17} className="spin" /> : <Download size={17} />}{' '}
-              {busy ? 'Đang tải…' : 'Tải xuống'}
-            </button>
-          )}
+          <button
+            className="primary compact"
+            disabled={busy || !selected}
+            onClick={() => onDownload(item.id)}
+          >
+            {busy ? <LoaderCircle size={17} className="spin" /> : <Download size={17} />}{' '}
+            {busy ? 'Đang tải…' : job?.state === 'completed' ? 'Tải lại' : 'Tải xuống'}
+          </button>
         </div>
         <div className="format-note">
           {selected ? fileSize(selected.size) : 'Chọn một định dạng có sẵn'}
